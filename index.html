@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esperanto Bae Bae - Accueil</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+    }
+
+    .intro {
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .stat-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    .progress-wrap {
+      background: #e5e7eb;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 6px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .progress-you {
+      background: #22c55e;
+      width: 0%;
+    }
+
+    .progress-her {
+      background: #3b82f6;
+      width: 30%;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .courses {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .course-link,
+    .course-locked {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .course-link {
+      background: #eef2ff;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .course-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      background: #e0e7ff;
+    }
+
+    .course-locked {
+      background: #f3f4f6;
+      opacity: 0.78;
+      cursor: not-allowed;
+    }
+
+    .course-link h3,
+    .course-locked h3 {
+      margin: 0 0 6px;
+      font-size: 19px;
+    }
+
+    .course-link p,
+    .course-locked p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: white;
+      font-size: 12px;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .tag.success {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    .tag.warning {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .tag.locked {
+      background: #e5e7eb;
+      border-color: #d1d5db;
+      color: #4b5563;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .rule-box {
+      margin-top: 16px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .small-note {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Esperanto Bae Bae</h1>
+      <p class="subtitle">
+        Le site préféré de Bae et Bae pour apprendre leur langue trop secrète pour cracher sur les gens à côté.
+      </p>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2>Bienvenue</h2>
+        <p class="intro">
+          Cette page est la page d'accueil. On y trouve la liste des cours, composés d'une partie cours et de questions/réponses afin d'aider dans la progression, ainsi qu'une barre qui indique la progression de chacun.
+        </p>
+
+        <div class="stats">
+          <div class="stat-box">
+            <strong>Ta progression</strong>
+            <div class="progress-wrap">
+              <div class="progress-bar progress-you" id="progressYouBar"></div>
+            </div>
+            <div class="progress-label" id="progressYouText">0% complété</div>
+          </div>
+
+          <div class="stat-box">
+            <strong>Progression de l'autre.</strong>
+            <div class="progress-wrap">
+              <div class="progress-bar progress-her"></div>
+            </div>
+            <div class="progress-label">30% complété</div>
+          </div>
+        </div>
+
+        <p class="footer-note">
+          Et oui comme par hasard c'est moi qui suis plus avancé...
+        </p>
+
+        <div class="rule-box">
+          <strong>Règle de validation :</strong><br />
+          Un cours est validé seulement si le score final est d'au moins <strong>80%</strong>.
+          Tant qu’un cours n’est pas validé, le suivant reste bloqué.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Liste des cours</h2>
+        <div class="courses" id="coursesList"></div>
+
+        <p class="footer-note">
+          Termine un cours avec au moins 80% pour débloquer le suivant.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const courses = [
+      {
+        id: "salutations",
+        title: "Salutations",
+        file: "salutations.html",
+        description: "Bonjour, merci, oui, non, et les premiers mots pour commencer à discuter en esperanto.",
+        exercises: 8
+      },
+      {
+        id: "bases",
+        title: "Bases",
+        file: "bases.html",
+        description: "Les premières structures utiles comme “Mi estas…”, du vocabulaire courant et des mots simples.",
+        exercises: 8
+      }
+    ];
+
+    function getCourseResult(courseId) {
+      const raw = localStorage.getItem("course_" + courseId);
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function isCourseValidated(courseId) {
+      const result = getCourseResult(courseId);
+      return !!(result && result.validated === true);
+    }
+
+    function renderCourses() {
+      const container = document.getElementById("coursesList");
+      container.innerHTML = "";
+
+      courses.forEach((course, index) => {
+        const previousCourse = courses[index - 1];
+        const unlocked = index === 0 || isCourseValidated(previousCourse.id);
+        const result = getCourseResult(course.id);
+
+        let element;
+
+        if (unlocked) {
+          element = document.createElement("a");
+          element.href = course.file;
+          element.className = "course-link";
+        } else {
+          element = document.createElement("div");
+          element.className = "course-locked";
+        }
+
+        let tags = `<span class="tag">${course.exercises} exercices</span>`;
+
+        if (result && result.validated) {
+          tags += `<span class="tag success">Validé - ${result.percent}%</span>`;
+        } else if (result && !result.validated) {
+          tags += `<span class="tag warning">Non validé - ${result.percent}%</span>`;
+        } else if (!unlocked) {
+          tags += `<span class="tag locked">Bloqué</span>`;
+        }
+
+        let lockedMessage = "";
+        if (!unlocked && previousCourse) {
+          lockedMessage = `<p class="small-note">Valide d'abord le cours "${previousCourse.title}" à 80% minimum.</p>`;
+        }
+
+        element.innerHTML = `
+          <h3>${course.title}</h3>
+          <p>${course.description}</p>
+          ${tags}
+          ${lockedMessage}
+        `;
+
+        container.appendChild(element);
+      });
+    }
+
+    function renderProgress() {
+      const validatedCount = courses.filter(course => isCourseValidated(course.id)).length;
+      const percent = Math.round((validatedCount / courses.length) * 100);
+
+      document.getElementById("progressYouBar").style.width = percent + "%";
+      document.getElementById("progressYouText").textContent = percent + "% complété";
+    }
+
+    function resetProgress() {
+      courses.forEach(course => {
+        localStorage.removeItem("course_" + course.id);
+      });
+
+      renderCourses();
+      renderProgress();
+    }
+
+    window.resetProgress = resetProgress;
+
+    renderCourses();
+    renderProgress();
+  </script>
+</body>
+</html>
