@@ -129,7 +129,13 @@
     <div class="card" id="app"></div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const lesson = {
       id: "salutations",
       title: "Salutations",
@@ -227,7 +233,29 @@
       return lesson.exercises[state.exerciseIndex];
     }
 
-    function saveCourseResult() {
+    async function saveCourseResultToSupabase(percent, validated) {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+      if (!user) return;
+
+      const updateData = {
+        updated_at: new Date().toISOString()
+      };
+
+      updateData[lesson.id + "_percent"] = percent;
+      updateData[lesson.id + "_validated"] = validated;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(updateData)
+        .eq("id", user.id);
+
+      if (error) {
+        console.error(error);
+      }
+    }
+
+    async function saveCourseResult() {
       const percent = Math.round((state.score / lesson.exercises.length) * 100);
       const validated = percent >= 80;
 
@@ -237,6 +265,8 @@
         percent: percent,
         validated: validated
       }));
+
+      await saveCourseResultToSupabase(percent, validated);
 
       return { percent, validated };
     }
@@ -261,7 +291,7 @@
       render();
     }
 
-    function nextExercise() {
+    async function nextExercise() {
       if (state.exerciseIndex < lesson.exercises.length - 1) {
         state.exerciseIndex++;
         state.checked = false;
@@ -269,7 +299,7 @@
         state.typedAnswer = "";
       } else {
         state.finished = true;
-        saveCourseResult();
+        await saveCourseResult();
       }
       render();
     }
@@ -304,8 +334,8 @@
       `;
     }
 
-    function renderFinished(app) {
-      const result = saveCourseResult();
+    async function renderFinished(app) {
+      const result = await saveCourseResult();
 
       app.innerHTML = `
         <h2>${lesson.title} terminée 🎉</h2>
@@ -328,6 +358,22 @@
           <a href="index.html"><button class="secondary">Retour à l’accueil</button></a>
         </div>
       `;
+    }
+
+    async function render() {
+      const app = document.getElementById("app");
+
+      if (!state.started) {
+        renderIntro(app);
+        return;
+      }
+
+      if (state.finished) {
+        await renderFinished(app);
+        return;
+      }
+
+      renderExercise(app);
     }
 
     function renderExercise(app) {
@@ -382,22 +428,6 @@
           <button class="secondary" onclick="resetLesson()">Retour au cours</button>
         </div>
       `;
-    }
-
-    function render() {
-      const app = document.getElementById("app");
-
-      if (!state.started) {
-        renderIntro(app);
-        return;
-      }
-
-      if (state.finished) {
-        renderFinished(app);
-        return;
-      }
-
-      renderExercise(app);
     }
 
     function selectChoice(choice) {
