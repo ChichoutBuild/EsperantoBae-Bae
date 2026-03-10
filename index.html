@@ -279,7 +279,20 @@
     </div>
   </div>
 
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+
+    const supabase = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    console.log("Supabase connecté :", supabase);
+
     const courses = [
       {
         id: "salutations",
