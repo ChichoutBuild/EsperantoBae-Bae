@@ -59,16 +59,16 @@
       display: grid;
       gap: 14px;
     }
-    .course-link, .course-locked {
-      display: block;
-      text-decoration: none;
-      color: inherit;
+    .course-card {
       border: 1px solid #e5e7eb;
       border-radius: 16px;
       padding: 16px;
+      background: #eef2ff;
     }
-    .course-link { background: #eef2ff; }
-    .course-locked { background: #f3f4f6; opacity: 0.78; }
+    .course-card.locked {
+      background: #f3f4f6;
+      opacity: 0.9;
+    }
     .tag {
       display: inline-block;
       margin-top: 10px;
@@ -81,13 +81,32 @@
     }
     .success { background: #dcfce7; }
     .warning { background: #fef3c7; }
-    button {
+    .button-row {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button, .course-btn {
       border: none;
       border-radius: 12px;
       padding: 10px 14px;
       background: #111827;
       color: white;
       cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-block;
+    }
+    .course-btn.locked {
+      background: #9ca3af;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .muted {
+      color: #6b7280;
+      line-height: 1.5;
+      font-size: 14px;
     }
     @media (max-width: 860px) {
       .layout { grid-template-columns: 1fr; }
@@ -112,14 +131,14 @@
             <strong>Ta progression</strong>
             <div class="progress-wrap"><div class="progress-bar mine" id="myBar"></div></div>
             <div id="myText">0% complété</div>
-            <div id="myMeta"></div>
+            <div id="myMeta" class="muted"></div>
           </div>
 
           <div class="stat-box">
             <strong>Progression de l'autre</strong>
             <div class="progress-wrap"><div class="progress-bar other" id="otherBar"></div></div>
             <div id="otherText">0% complété</div>
-            <div id="otherMeta"></div>
+            <div id="otherMeta" class="muted"></div>
           </div>
         </div>
       </div>
@@ -154,50 +173,69 @@
 
     function percentToGlobal(progress) {
       const validated =
-        (progress.salutations_percent >= 80 ? 1 : 0) +
-        (progress.bases_percent >= 80 ? 1 : 0);
+        (Number(progress.salutations_percent || 0) >= 80 ? 1 : 0) +
+        (Number(progress.bases_percent || 0) >= 80 ? 1 : 0);
       return Math.round((validated / 2) * 100);
+    }
+
+    function isCourseValidatedForUser(progress, courseId) {
+      if (!progress) return false;
+      if (courseId === "salutations") return Number(progress.salutations_percent || 0) >= 80;
+      if (courseId === "bases") return Number(progress.bases_percent || 0) >= 80;
+      return false;
+    }
+
+    function isCourseValidatedForEveryone(courseId) {
+      if (!allUsers.length) return false;
+      return allUsers.every(user => isCourseValidatedForUser(user, courseId));
     }
 
     function renderCourses() {
       const list = document.getElementById("coursesList");
       list.innerHTML = "";
 
-      const salutationsDone = (myProgress.salutations_percent || 0) >= 80;
+      const salutationsDoneByEveryone = isCourseValidatedForEveryone("salutations");
 
       courses.forEach((course, index) => {
-        const unlocked = index === 0 || salutationsDone;
-        const percent =
+        const unlocked = index === 0 || salutationsDoneByEveryone;
+        const myPercent =
           course.id === "salutations"
-            ? myProgress.salutations_percent || 0
-            : myProgress.bases_percent || 0;
+            ? Number(myProgress.salutations_percent || 0)
+            : Number(myProgress.bases_percent || 0);
 
-        let el;
-        if (unlocked) {
-          el = document.createElement("a");
-          el.href = course.file;
-          el.className = "course-link";
-        } else {
-          el = document.createElement("div");
-          el.className = "course-locked";
-        }
+        const card = document.createElement("div");
+        card.className = "course-card" + (unlocked ? "" : " locked");
 
         let tags = "";
-        if (percent >= 80) {
-          tags += `<span class="tag success">Validé - ${percent}%</span>`;
-        } else if (percent > 0) {
-          tags += `<span class="tag warning">Non validé - ${percent}%</span>`;
-        } else if (!unlocked) {
+        if (myPercent >= 80) {
+          tags += `<span class="tag success">Validé - ${myPercent}%</span>`;
+        } else if (myPercent > 0) {
+          tags += `<span class="tag warning">Non validé - ${myPercent}%</span>`;
+        }
+
+        if (!unlocked) {
           tags += `<span class="tag">Bloqué</span>`;
         }
 
-        el.innerHTML = `
+        const blockMessage = !unlocked
+          ? `<p class="muted">Le cours se débloquera quand vous aurez tous les deux validé "Salutations" à 80% minimum.</p>`
+          : "";
+
+        const buttonHtml = unlocked
+          ? `<a class="course-btn" href="${course.file}">Ouvrir le cours</a>`
+          : `<span class="course-btn locked">Cours bloqué</span>`;
+
+        card.innerHTML = `
           <h3>${course.title}</h3>
-          <p>${course.description}</p>
+          <p class="muted">${course.description}</p>
           ${tags}
+          ${blockMessage}
+          <div class="button-row">
+            ${buttonHtml}
+          </div>
         `;
 
-        list.appendChild(el);
+        list.appendChild(card);
       });
     }
 
