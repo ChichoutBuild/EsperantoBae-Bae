@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accueil - Esperanto Bae Bae</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .header, .card {
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .stat-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .progress-wrap {
+      background: #e5e7eb;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 6px;
+    }
+    .progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+    .mine { background: #22c55e; width: 0%; }
+    .other { background: #3b82f6; width: 0%; }
+    .courses {
+      display: grid;
+      gap: 14px;
+    }
+    .course-link, .course-locked {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .course-link { background: #eef2ff; }
+    .course-locked { background: #f3f4f6; opacity: 0.78; }
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: white;
+      font-size: 12px;
+      border: 1px solid #d1d5db;
+    }
+    .success { background: #dcfce7; }
+    .warning { background: #fef3c7; }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+    }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Esperanto Bae Bae</h1>
+      <p id="welcome"></p>
+      <button onclick="logout()">Se déconnecter</button>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2>Progression</h2>
+
+        <div class="stats">
+          <div class="stat-box">
+            <strong>Ta progression</strong>
+            <div class="progress-wrap"><div class="progress-bar mine" id="myBar"></div></div>
+            <div id="myText">0% complété</div>
+            <div id="myMeta"></div>
+          </div>
+
+          <div class="stat-box">
+            <strong>Progression de l'autre</strong>
+            <div class="progress-wrap"><div class="progress-bar other" id="otherBar"></div></div>
+            <div id="otherText">0% complété</div>
+            <div id="otherMeta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Liste des cours</h2>
+        <div class="courses" id="coursesList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const courses = [
+      {
+        id: "salutations",
+        title: "Salutations",
+        file: "salutations.html",
+        description: "Bonjour, merci, oui, non, et les premiers mots."
+      },
+      {
+        id: "bases",
+        title: "Bases",
+        file: "bases.html",
+        description: "Mi estas, amour, mots simples."
+      }
+    ];
+
+    let me = null;
+    let myProgress = null;
+    let allUsers = [];
+
+    function percentToGlobal(progress) {
+      const validated =
+        (progress.salutations_percent >= 80 ? 1 : 0) +
+        (progress.bases_percent >= 80 ? 1 : 0);
+      return Math.round((validated / 2) * 100);
+    }
+
+    function renderCourses() {
+      const list = document.getElementById("coursesList");
+      list.innerHTML = "";
+
+      const salutationsDone = (myProgress.salutations_percent || 0) >= 80;
+
+      courses.forEach((course, index) => {
+        const unlocked = index === 0 || salutationsDone;
+        const percent =
+          course.id === "salutations"
+            ? myProgress.salutations_percent || 0
+            : myProgress.bases_percent || 0;
+
+        let el;
+        if (unlocked) {
+          el = document.createElement("a");
+          el.href = course.file;
+          el.className = "course-link";
+        } else {
+          el = document.createElement("div");
+          el.className = "course-locked";
+        }
+
+        let tags = "";
+        if (percent >= 80) {
+          tags += `<span class="tag success">Validé - ${percent}%</span>`;
+        } else if (percent > 0) {
+          tags += `<span class="tag warning">Non validé - ${percent}%</span>`;
+        } else if (!unlocked) {
+          tags += `<span class="tag">Bloqué</span>`;
+        }
+
+        el.innerHTML = `
+          <h3>${course.title}</h3>
+          <p>${course.description}</p>
+          ${tags}
+        `;
+
+        list.appendChild(el);
+      });
+    }
+
+    function renderProgress() {
+      const myPercent = percentToGlobal(myProgress);
+      document.getElementById("myBar").style.width = myPercent + "%";
+      document.getElementById("myText").textContent = myPercent + "% complété";
+      document.getElementById("myMeta").textContent =
+        "Niveau : " + myProgress.level + " | Score : " + myProgress.score;
+
+      const other = allUsers.find(u => u.login_id !== me.login_id);
+      if (other) {
+        const otherPercent = percentToGlobal(other);
+        document.getElementById("otherBar").style.width = otherPercent + "%";
+        document.getElementById("otherText").textContent = otherPercent + "% complété";
+        document.getElementById("otherMeta").textContent =
+          "Niveau : " + other.level + " | Score : " + other.score;
+      }
+    }
+
+    (async function init() {
+      const session = await requireAuth();
+      if (!session) return;
+
+      me = session;
+      document.getElementById("welcome").textContent =
+        "Connecté en tant que " + session.display_name;
+
+      const res1 = await apiPost({
+        action: "getProgress",
+        token: session.token
+      });
+
+      const res2 = await apiPost({
+        action: "getAllProgress",
+        token: session.token
+      });
+
+      if (!res1.ok) {
+        clearSession();
+        window.location.href = "index.html";
+        return;
+      }
+
+      myProgress = res1.progress;
+      allUsers = res2.ok ? res2.users : [];
+
+      renderCourses();
+      renderProgress();
+    })();
+  </script>
+</body>
+</html>
