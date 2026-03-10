@@ -7,64 +7,121 @@
   <link rel="icon" href="data:,">
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      color: #1f2937;
+      background: #7953B5;
+      color: #1f1530;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
     }
+
     .card {
       width: 100%;
-      max-width: 460px;
-      background: white;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(40, 20, 70, 0.28);
+      border: 1px solid rgba(255,255,255,0.35);
+      backdrop-filter: blur(6px);
     }
-    h1 { margin-top: 0; }
-    .subtitle { color: #6b7280; line-height: 1.5; }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      color: #4b2d78;
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: #6b5a86;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, #f4ecff, #efe6ff);
+      border: 1px solid #e1d3fa;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 18px;
+      color: #5b467b;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
     input {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid #d9c9f5;
+      border-radius: 14px;
       margin-bottom: 12px;
-      font-size: 14px;
+      font-size: 15px;
+      background: #fff;
+      color: #2d1c46;
+      outline: none;
     }
+
+    input:focus {
+      border-color: #7953B5;
+      box-shadow: 0 0 0 4px rgba(121, 83, 181, 0.15);
+    }
+
     button {
+      width: 100%;
       border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
-      background: #111827;
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: #5c3d93;
       color: white;
       cursor: pointer;
-      width: 100%;
+      font-size: 15px;
+      font-weight: 600;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      background: #4d327e;
+      transform: translateY(-1px);
+    }
+
+    #message {
+      margin-top: 14px;
+      min-height: 20px;
+      color: #5d4a7a;
+      line-height: 1.5;
       font-size: 14px;
     }
-    #message {
-      margin-top: 12px;
-      color: #4b5563;
-      min-height: 20px;
+
+    .footer-note {
+      margin-top: 16px;
+      color: #7a6897;
+      font-size: 13px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Connexion</h1>
+    <h1>Esperanto Bae Bae</h1>
     <p class="subtitle">
-      Connecte-toi pour accéder à votre progression.
+      Votre petit cocon pour apprendre l’esperanto à deux, avec une progression partagée et des cours à débloquer ensemble.
     </p>
 
-    <input id="login_id" type="text" placeholder="Identifiant (sacha ou lea)" />
+    <div class="highlight">
+      Connecte-toi avec ton identifiant habituel pour retrouver ta progression, ton score et l’avancement du duo.
+    </div>
+
+    <input id="login_id" type="text" placeholder="Identifiant" />
     <input id="password" type="password" placeholder="Mot de passe" />
     <button onclick="login()">Se connecter</button>
 
     <div id="message"></div>
+    <div class="footer-note">Bae Bae Language System 💜</div>
   </div>
 
   <script src="config.js"></script>
