@@ -7,70 +7,151 @@
   <link rel="icon" href="data:,">
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      color: #1f2937;
+      background: #7953B5;
+      color: #251735;
     }
+
     .container {
       max-width: 1000px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 26px;
     }
-    .header, .card {
-      background: white;
-      border-radius: 18px;
+
+    .header,
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 24px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 20px 50px rgba(40, 20, 70, 0.24);
       margin-bottom: 24px;
     }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #4b2d78;
+    }
+
+    .subtitle,
+    .lesson-info,
+    .intro-text {
+      color: #6d5a89;
+      line-height: 1.6;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      text-decoration: none;
+      color: #4d327e;
+      font-weight: bold;
+    }
+
     .lesson-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
+      background: linear-gradient(135deg, #f8f3ff, #f0e8ff);
+      border: 1px solid #e2d5f7;
+      border-radius: 18px;
       padding: 18px;
       margin-top: 16px;
     }
-    .buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
-    button, .back {
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    button, .button-link {
       border: none;
       border-radius: 14px;
       padding: 12px 18px;
       cursor: pointer;
       font-size: 15px;
-      background: #111827;
+      background: #5c3d93;
       color: white;
       text-decoration: none;
+      font-weight: 600;
     }
-    .secondary { background: #e5e7eb; color: #111827; }
-    .choices { display: grid; gap: 12px; margin-bottom: 20px; }
+
+    .secondary {
+      background: #ebe3f7;
+      color: #3d2a5f;
+    }
+
+    .question {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #43296b;
+    }
+
+    .choices {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
     .choice {
-      border: 1px solid #d1d5db;
+      border: 1px solid #d7caee;
       background: white;
       padding: 14px;
       border-radius: 14px;
       cursor: pointer;
+      color: #2f1c47;
     }
-    .choice.selected { background: #111827; color: white; }
+
+    .choice.selected {
+      background: #5c3d93;
+      color: white;
+      border-color: #5c3d93;
+    }
+
     input[type="text"] {
       width: 100%;
       padding: 14px;
       border-radius: 14px;
-      border: 1px solid #d1d5db;
+      border: 1px solid #d7caee;
+      font-size: 16px;
       margin-bottom: 20px;
+      color: #2f1c47;
     }
-    .result { margin: 18px 0; padding: 16px; border-radius: 14px; }
-    .good { background: #dcfce7; }
-    .bad { background: #fee2e2; }
+
+    .result {
+      margin: 18px 0;
+      padding: 16px;
+      border-radius: 16px;
+    }
+
+    .good { background: #eadbff; }
+    .bad { background: #ffe4f0; }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .vocab-item {
+      background: white;
+      border: 1px solid #e1d3fa;
+      border-radius: 14px;
+      padding: 12px;
+      color: #4f3b6d;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <a class="back secondary" href="home.html">← Retour</a>
+      <a class="back" href="home.html">← Retour à l’accueil</a>
       <h1>Salutations</h1>
-      <p>Apprendre les mots de base pour saluer.</p>
+      <p class="subtitle">
+        Les premiers mots pour vous saluer, répondre simplement et commencer à parler ensemble en esperanto.
+      </p>
     </div>
 
     <div class="card" id="app"></div>
@@ -180,12 +261,14 @@
     function renderIntro(app) {
       app.innerHTML = `
         <h2>Mini-cours</h2>
-        <p>${lesson.introText}</p>
+        <p class="intro-text">${lesson.introText}</p>
         <div class="lesson-box">
-          ${lesson.notes.map(n => `<div>${n}</div>`).join("")}
+          <div class="vocab-grid">
+            ${lesson.notes.map(n => `<div class="vocab-item">${n}</div>`).join("")}
+          </div>
         </div>
         <div class="buttons">
-          <button onclick="startLesson()">Commencer</button>
+          <button onclick="startLesson()">Commencer les exercices</button>
         </div>
       `;
     }
@@ -197,11 +280,11 @@
         <p>Score : <strong>${state.score}/${lesson.exercises.length}</strong> (${result.percent}%)</p>
         <div class="result ${result.validated ? "good" : "bad"}">
           <strong>${result.validated ? "Cours validé ✅" : "Cours non validé ❌"}</strong>
-          <p>${result.validated ? "Le cours suivant est débloqué." : "Il faut 80% minimum pour valider."}</p>
+          <p>${result.validated ? "Le cours suivant se débloquera quand vous l’aurez tous les deux validé." : "Il faut 80% minimum pour valider."}</p>
         </div>
         <div class="buttons">
           <button onclick="resetLesson()">Revoir</button>
-          <a class="back secondary" href="home.html">Retour accueil</a>
+          <a class="button-link secondary" href="home.html">Retour accueil</a>
         </div>
       `;
     }
@@ -243,8 +326,8 @@
       }
 
       app.innerHTML = `
-        <p>Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
-        <h2>${ex.prompt}</h2>
+        <p class="lesson-info">Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
+        <div class="question">${ex.prompt}</div>
         ${answerBlock}
         ${resultBlock}
         <div class="buttons">
