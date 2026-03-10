@@ -7,68 +7,154 @@
   <link rel="icon" href="data:,">
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      color: #1f2937;
+      background: #7953B5;
+      color: #251735;
     }
+
     .container {
-      max-width: 1100px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 26px;
     }
-    .header, .card {
-      background: white;
-      border-radius: 18px;
+
+    .header,
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 20px 50px rgba(40, 20, 70, 0.24);
       margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.35);
     }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      color: #4b2d78;
+      font-size: 34px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #4b2d78;
+    }
+
+    .subtitle,
+    .muted {
+      color: #6d5a89;
+      line-height: 1.6;
+    }
+
+    .logout-btn,
+    .course-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 11px 16px;
+      background: #5c3d93;
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .logout-btn:hover,
+    .course-btn:hover {
+      background: #4d327e;
+      transform: translateY(-1px);
+    }
+
+    .course-btn.locked {
+      background: #b7abc9;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
     .layout {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 20px;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 22px;
     }
+
     .stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 16px;
     }
+
     .stat-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
+      background: linear-gradient(135deg, #f7f2ff, #f1e9ff);
+      border: 1px solid #e2d5f7;
+      border-radius: 18px;
+      padding: 16px;
     }
+
+    .stat-box strong {
+      display: block;
+      margin-bottom: 10px;
+      color: #49306f;
+    }
+
     .progress-wrap {
-      background: #e5e7eb;
-      height: 10px;
+      background: #ddd0f1;
+      height: 12px;
       border-radius: 999px;
       overflow: hidden;
-      margin: 8px 0 6px;
+      margin: 8px 0 8px;
     }
+
     .progress-bar {
       height: 100%;
       border-radius: 999px;
       transition: width 0.25s ease;
     }
-    .mine { background: #22c55e; width: 0%; }
-    .other { background: #3b82f6; width: 0%; }
+
+    .mine {
+      background: linear-gradient(90deg, #8c6bc7, #5c3d93);
+      width: 0%;
+    }
+
+    .other {
+      background: linear-gradient(90deg, #d38db4, #9b5d86);
+      width: 0%;
+    }
+
     .courses {
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
+
     .course-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
-      background: #eef2ff;
+      border: 1px solid #e2d5f7;
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(135deg, #f6f0ff, #efe6ff);
     }
+
     .course-card.locked {
-      background: #f3f4f6;
-      opacity: 0.9;
+      background: linear-gradient(135deg, #f1edf7, #ece7f3);
+      opacity: 0.95;
     }
+
+    .course-card h3 {
+      margin: 0 0 8px;
+      color: #4a2f77;
+      font-size: 20px;
+    }
+
     .tag {
       display: inline-block;
       margin-top: 10px;
@@ -77,38 +163,37 @@
       border-radius: 999px;
       background: white;
       font-size: 12px;
-      border: 1px solid #d1d5db;
+      border: 1px solid #d7caee;
+      color: #4c3a69;
     }
-    .success { background: #dcfce7; }
-    .warning { background: #fef3c7; }
+
+    .success {
+      background: #e6d7ff;
+    }
+
+    .warning {
+      background: #ffe4f2;
+    }
+
     .button-row {
       margin-top: 14px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-    button, .course-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 10px 14px;
-      background: #111827;
-      color: white;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 14px;
-      display: inline-block;
-    }
-    .course-btn.locked {
-      background: #9ca3af;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-    .muted {
-      color: #6b7280;
-      line-height: 1.5;
+
+    .note-box {
+      margin-top: 18px;
+      background: linear-gradient(135deg, #f8f4ff, #f1e8ff);
+      border: 1px solid #e2d5f7;
+      border-radius: 18px;
+      padding: 16px;
+      color: #5d4b79;
+      line-height: 1.6;
       font-size: 14px;
     }
-    @media (max-width: 860px) {
+
+    @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
       .stats { grid-template-columns: 1fr; }
     }
@@ -117,34 +202,41 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Esperanto Bae Bae</h1>
-      <p id="welcome"></p>
-      <button onclick="logout()">Se déconnecter</button>
+      <div class="header-top">
+        <div>
+          <h1>Esperanto Bae Bae</h1>
+          <p id="welcome" class="subtitle"></p>
+        </div>
+        <button class="logout-btn" onclick="logout()">Se déconnecter</button>
+      </div>
+      <div class="note-box">
+        Avancez ensemble : un nouveau cours ne se débloque que lorsque vous avez tous les deux validé le précédent.
+      </div>
     </div>
 
     <div class="layout">
       <div class="card">
-        <h2>Progression</h2>
+        <h2>Votre progression</h2>
 
         <div class="stats">
           <div class="stat-box">
             <strong>Ta progression</strong>
             <div class="progress-wrap"><div class="progress-bar mine" id="myBar"></div></div>
-            <div id="myText">0% complété</div>
+            <div id="myText" class="muted">0% complété</div>
             <div id="myMeta" class="muted"></div>
           </div>
 
           <div class="stat-box">
             <strong>Progression de l'autre</strong>
             <div class="progress-wrap"><div class="progress-bar other" id="otherBar"></div></div>
-            <div id="otherText">0% complété</div>
+            <div id="otherText" class="muted">0% complété</div>
             <div id="otherMeta" class="muted"></div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>Liste des cours</h2>
+        <h2>Les cours</h2>
         <div class="courses" id="coursesList"></div>
       </div>
     </div>
@@ -222,7 +314,7 @@
           : "";
 
         const buttonHtml = unlocked
-          ? `<a class="course-btn" href="${course.file}">Ouvrir le cours</a>`
+          ? `<a class="course-btn" href="${course.file}">Commencer le cours</a>`
           : `<span class="course-btn locked">Cours bloqué</span>`;
 
         card.innerHTML = `
