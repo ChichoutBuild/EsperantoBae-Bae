@@ -1,274 +1,119 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion - Esperanto Bae Bae</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1 { margin-top: 0; }
+    .subtitle { color: #6b7280; line-height: 1.5; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+    }
+    #message {
+      margin-top: 12px;
+      color: #4b5563;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Connexion</h1>
+    <p class="subtitle">
+      Connecte-toi pour accéder à votre progression.
+    </p>
 
-<script>
-const SUPABASE_URL = "https://bsmtfqksrhhjrvwjzoad.supabase.co";
-const SUPABASE_KEY = "sb_publishable_vsbgly8m-il5_YYbiiEAcA_OCi1gYcC";
+    <input id="login_id" type="text" placeholder="Identifiant (sacha ou lea)" />
+    <input id="password" type="password" placeholder="Mot de passe" />
+    <button onclick="login()">Se connecter</button>
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div id="message"></div>
+  </div>
 
-const LOGIN_MAP = {
-  sacha: "sacha@baebae.local",
-  lea: "leacaca@baebae.local"
-};
+  <script src="config.js"></script>
+  <script>
+    async function login() {
+      const loginId = document.getElementById("login_id").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
 
-const courses = [
-  {
-    id: "salutations",
-    title: "Salutations",
-    file: "salutations.html",
-    description: "Bonjour, merci, oui, non, et les premiers mots pour commencer à discuter en esperanto.",
-    exercises: 8
-  },
-  {
-    id: "bases",
-    title: "Bases",
-    file: "bases.html",
-    description: "Les premières structures utiles comme “Mi estas…”, du vocabulaire courant et des mots simples.",
-    exercises: 8
-  }
-];
+      if (!loginId || !password) {
+        message.textContent = "Remplis les deux champs.";
+        return;
+      }
 
-let currentUser = null;
-let currentProfile = null;
-
-function setAuthMessage(message) {
-  const el = document.getElementById("authMessage");
-  if (el) el.textContent = message;
-}
-
-function getEmailFromLogin(login) {
-  return LOGIN_MAP[login] || login;
-}
-
-async function ensureProfile() {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError) {
-    console.error(userError);
-    return;
-  }
-
-  const user = userData?.user;
-  if (!user) return;
-
-  const { data: existing, error: selectError } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (selectError) {
-    console.error(selectError);
-    return;
-  }
-
-  if (!existing) {
-    const { error: insertError } = await supabase
-      .from("profiles")
-      .insert({
-        id: user.id,
-        email: user.email
+      const res = await apiPost({
+        action: "login",
+        login_id: loginId,
+        password: password
       });
 
-    if (insertError) {
-      console.error(insertError);
-    }
-  }
-}
+      if (!res.ok) {
+        message.textContent = "Identifiant ou mot de passe incorrect.";
+        return;
+      }
 
-async function loadProfile() {
-  if (!currentUser) {
-    currentProfile = null;
-    renderCourses();
-    renderProgress();
-    return;
-  }
+      saveSession({
+        token: res.token,
+        login_id: res.user.login_id,
+        display_name: res.user.display_name
+      });
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", currentUser.id)
-    .single();
-
-  if (error) {
-    console.error(error);
-    currentProfile = null;
-  } else {
-    currentProfile = data;
-  }
-
-  renderCourses();
-  renderProgress();
-}
-
-async function initAuth() {
-  const {
-    data: { session },
-    error
-  } = await supabase.auth.getSession();
-
-  if (error) {
-    console.error(error);
-    setAuthMessage("Erreur de session.");
-    return;
-  }
-
-  if (session && session.user) {
-    currentUser = session.user;
-    await ensureProfile();
-    await loadProfile();
-
-    const displayId =
-      currentUser.email === "sacha@baebae.local"
-        ? "sacha"
-        : currentUser.email === "leacaca@baebae.local"
-        ? "lea"
-        : currentUser.email;
-
-    setAuthMessage("Connecté en tant que " + displayId);
-  } else {
-    currentUser = null;
-    currentProfile = null;
-    setAuthMessage("Non connecté.");
-    renderCourses();
-    renderProgress();
-  }
-}
-
-function getCourseResult(courseId) {
-  if (currentProfile) {
-    const validated = currentProfile[courseId + "_validated"];
-    const percent = currentProfile[courseId + "_percent"];
-
-    if (validated !== undefined && percent !== undefined) {
-      return {
-        validated: !!validated,
-        percent: percent || 0
-      };
-    }
-  }
-
-  const raw = localStorage.getItem("course_" + courseId);
-  return raw ? JSON.parse(raw) : null;
-}
-
-function isCourseValidated(courseId) {
-  const result = getCourseResult(courseId);
-  return !!(result && result.validated === true);
-}
-
-function renderCourses() {
-  const container = document.getElementById("coursesList");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  courses.forEach((course, index) => {
-    const previousCourse = courses[index - 1];
-    const unlocked = index === 0 || isCourseValidated(previousCourse.id);
-    const result = getCourseResult(course.id);
-
-    let element;
-
-    if (unlocked) {
-      element = document.createElement("a");
-      element.href = course.file;
-      element.className = "course-link";
-    } else {
-      element = document.createElement("div");
-      element.className = "course-locked";
+      window.location.href = "home.html";
     }
 
-    let tags = `<span class="tag">${course.exercises} exercices</span>`;
+    (async function autoLogin() {
+      const session = getSession();
+      if (!session || !session.token) return;
 
-    if (result && result.validated) {
-      tags += `<span class="tag success">Validé - ${result.percent}%</span>`;
-    } else if (result && !result.validated && result.percent > 0) {
-      tags += `<span class="tag warning">Non validé - ${result.percent}%</span>`;
-    } else if (!unlocked) {
-      tags += `<span class="tag locked">Bloqué</span>`;
-    }
+      const res = await apiPost({
+        action: "validate",
+        token: session.token
+      });
 
-    let lockedMessage = "";
-    if (!unlocked && previousCourse) {
-      lockedMessage = `<p class="small-note">Valide d'abord le cours "${previousCourse.title}" à 80% minimum.</p>`;
-    }
-
-    element.innerHTML = `
-      <h3>${course.title}</h3>
-      <p>${course.description}</p>
-      ${tags}
-      ${lockedMessage}
-    `;
-
-    container.appendChild(element);
-  });
-}
-
-function renderProgress() {
-  const bar = document.getElementById("progressYouBar");
-  const text = document.getElementById("progressYouText");
-  if (!bar || !text) return;
-
-  const validatedCount = courses.filter(course => isCourseValidated(course.id)).length;
-  const percent = Math.round((validatedCount / courses.length) * 100);
-
-  bar.style.width = percent + "%";
-  text.textContent = percent + "% complété";
-}
-
-window.signIn = async function () {
-  const login = document.getElementById("loginId")?.value.trim().toLowerCase();
-  const password = document.getElementById("password")?.value;
-
-  const email = getEmailFromLogin(login);
-
-  if (!email || !password) {
-    setAuthMessage("Entre ton identifiant et ton mot de passe.");
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    console.error(error);
-    setAuthMessage("Identifiant ou mot de passe incorrect.");
-    return;
-  }
-
-  await initAuth();
-};
-
-window.signOut = async function () {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    console.error(error);
-    setAuthMessage("Erreur lors de la déconnexion.");
-    return;
-  }
-
-  currentUser = null;
-  currentProfile = null;
-  setAuthMessage("Déconnecté.");
-  renderCourses();
-  renderProgress();
-};
-
-window.resetProgress = function () {
-  courses.forEach(course => {
-    localStorage.removeItem("course_" + course.id);
-  });
-
-  renderCourses();
-  renderProgress();
-};
-
-supabase.auth.onAuthStateChange(async () => {
-  await initAuth();
-});
-
-initAuth();
-</script>
+      if (res.ok) {
+        window.location.href = "home.html";
+      } else {
+        clearSession();
+      }
+    })();
+  </script>
+</body>
+</html>
