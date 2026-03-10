@@ -1,290 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Esperanto Bae Bae</title>
+
+<link rel="icon" href="data:,">
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#f6f7fb;
+color:#1f2937;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+padding:24px;
+}
+
+.header{
+background:white;
+border-radius:18px;
+padding:24px;
+box-shadow:0 8px 24px rgba(0,0,0,0.08);
+margin-bottom:24px;
+}
+
+.layout{
+display:grid;
+grid-template-columns:1.1fr 0.9fr;
+gap:20px;
+}
+
+.card{
+background:white;
+border-radius:18px;
+padding:20px;
+box-shadow:0 8px 24px rgba(0,0,0,0.08);
+}
+
+.progress-wrap{
+background:#e5e7eb;
+height:10px;
+border-radius:999px;
+overflow:hidden;
+margin:8px 0 6px;
+}
+
+.progress-bar{
+height:100%;
+background:#22c55e;
+width:0%;
+}
+
+.courses{
+display:grid;
+gap:14px;
+margin-top:16px;
+}
+
+.course-link,
+.course-locked{
+display:block;
+border:1px solid #e5e7eb;
+border-radius:16px;
+padding:16px;
+text-decoration:none;
+color:inherit;
+}
+
+.course-link{
+background:#eef2ff;
+}
+
+.course-locked{
+background:#f3f4f6;
+opacity:0.7;
+}
+
+.tag{
+display:inline-block;
+margin-top:10px;
+padding:6px 10px;
+border-radius:999px;
+background:white;
+font-size:12px;
+border:1px solid #d1d5db;
+}
+
+.tag.success{background:#dcfce7}
+.tag.warning{background:#fef3c7}
+.tag.locked{background:#e5e7eb}
+
+.auth-box{
+margin-top:20px;
+background:#f9fafb;
+border:1px solid #e5e7eb;
+border-radius:14px;
+padding:14px;
+}
+
+.auth-input{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #d1d5db;
+margin-bottom:10px;
+}
+
+.auth-btn{
+border:none;
+border-radius:12px;
+padding:10px 14px;
+background:#111827;
+color:white;
+cursor:pointer;
+margin-right:6px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<h1>Esperanto Bae Bae</h1>
+
+<p>
+Le site préféré de Bae et Bae pour apprendre leur langue secrète.
+</p>
+
+</div>
+
+<div class="layout">
+
+<div class="card">
+
+<h2>Progression</h2>
+
+<div class="progress-wrap">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<p id="progressText">0% complété</p>
+
+<div class="auth-box">
+
+<h3>Connexion</h3>
+
+<input id="loginId" class="auth-input" placeholder="sacha ou lea">
+
+<input id="password" type="password" class="auth-input" placeholder="mot de passe">
+
+<button class="auth-btn" onclick="signIn()">Se connecter</button>
+<button class="auth-btn" onclick="signOut()">Se déconnecter</button>
+
+<p id="authMessage">Non connecté</p>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Cours</h2>
+
+<div id="coursesList" class="courses"></div>
+
+</div>
+
+</div>
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
-const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
-const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+const SUPABASE_URL="https://TON_PROJECT_ID.supabase.co"
+const SUPABASE_KEY="TA_CLE_ANON_PUBLIC"
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
 
-const LOGIN_MAP = {
-  sacha: "sacha@baebae.local",
-  lea: "leacaca@baebae.local"
-};
-
-const courses = [
-  {
-    id: "salutations",
-    title: "Salutations",
-    file: "salutations.html",
-    description: "Bonjour, merci, oui, non, et les premiers mots pour commencer à discuter en esperanto.",
-    exercises: 8
-  },
-  {
-    id: "bases",
-    title: "Bases",
-    file: "bases.html",
-    description: "Les premières structures utiles comme “Mi estas…”, du vocabulaire courant et des mots simples.",
-    exercises: 8
-  }
-];
-
-let currentUser = null;
-let currentProfile = null;
-
-function setAuthMessage(message) {
-  document.getElementById("authMessage").textContent = message;
+const LOGIN_MAP={
+sacha:"sacha@baebae.local",
+lea:"leacaca@baebae.local"
 }
 
-function getEmailFromLogin(loginId) {
-  return LOGIN_MAP[loginId] || null;
+const courses=[
+
+{
+id:"salutations",
+title:"Salutations",
+file:"salutations.html",
+exercises:8
+},
+
+{
+id:"bases",
+title:"Bases",
+file:"bases.html",
+exercises:8
 }
 
-async function signIn() {
+]
 
-  const loginId = document.getElementById("loginId").value.trim().toLowerCase();
-  const password = document.getElementById("password").value;
+let currentUser=null
+let currentProfile=null
 
-  const email = getEmailFromLogin(loginId) || loginId;
-
-  if (!email || !password) {
-    setAuthMessage("Entre ton identifiant ou email et ton mot de passe.");
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    setAuthMessage("Identifiant ou mot de passe incorrect.");
-    return;
-  }
-
-  await initAuth();
+function setMessage(t){
+document.getElementById("authMessage").textContent=t
 }
 
-async function signOut() {
-
-  await supabase.auth.signOut();
-
-  currentUser = null;
-  currentProfile = null;
-
-  setAuthMessage("Déconnecté.");
-
-  renderCourses();
-  renderProgress();
+function emailFromLogin(login){
+return LOGIN_MAP[login]||login
 }
 
-async function ensureProfile() {
+async function signIn(){
 
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData?.user;
+const login=document.getElementById("loginId").value.trim().toLowerCase()
+const password=document.getElementById("password").value
 
-  if (!user) return;
+const email=emailFromLogin(login)
 
-  const { data: existing } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", user.id)
-    .maybeSingle();
+const {error}=await supabase.auth.signInWithPassword({email,password})
 
-  if (!existing) {
-
-    await supabase.from("profiles").insert({
-      id: user.id,
-      email: user.email
-    });
-
-  }
+if(error){
+setMessage("connexion échouée")
+return
 }
 
-async function loadProfile() {
+initAuth()
 
-  if (!currentUser) {
-    currentProfile = null;
-    renderCourses();
-    renderProgress();
-    return;
-  }
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", currentUser.id)
-    .single();
-
-  if (error) {
-    currentProfile = null;
-  } else {
-    currentProfile = data;
-  }
-
-  renderCourses();
-  renderProgress();
 }
 
-async function initAuth() {
+async function signOut(){
 
-  const { data: { session } } = await supabase.auth.getSession();
+await supabase.auth.signOut()
 
-  if (session && session.user) {
+currentUser=null
+currentProfile=null
 
-    currentUser = session.user;
+setMessage("déconnecté")
 
-    await ensureProfile();
+render()
 
-    await loadProfile();
-
-    const displayId =
-      currentUser.email === "sacha@baebae.local" ? "sacha"
-      : currentUser.email === "leacaca@baebae.local" ? "lea"
-      : currentUser.email;
-
-    setAuthMessage("Connecté en tant que " + displayId);
-
-  } else {
-
-    currentUser = null;
-    currentProfile = null;
-
-    setAuthMessage("Non connecté.");
-
-    renderCourses();
-    renderProgress();
-  }
 }
 
-function getCourseResult(courseId) {
+async function initAuth(){
 
-  if (currentProfile) {
+const {data:{session}}=await supabase.auth.getSession()
 
-    const validated = currentProfile[courseId + "_validated"];
-    const percent = currentProfile[courseId + "_percent"];
+if(session){
 
-    if (validated !== undefined && percent !== undefined) {
-      return {
-        validated: !!validated,
-        percent: percent
-      };
-    }
-  }
+currentUser=session.user
 
-  const raw = localStorage.getItem("course_" + courseId);
-  return raw ? JSON.parse(raw) : null;
+setMessage("connecté : "+currentUser.email)
+
+await loadProfile()
+
+}else{
+
+setMessage("non connecté")
+
+render()
+
 }
 
-function isCourseValidated(courseId) {
-
-  const result = getCourseResult(courseId);
-  return !!(result && result.validated === true);
 }
 
-function renderCourses() {
+async function loadProfile(){
 
-  const container = document.getElementById("coursesList");
+const {data}=await supabase
+.from("profiles")
+.select("*")
+.eq("id",currentUser.id)
+.single()
 
-  container.innerHTML = "";
+currentProfile=data
 
-  courses.forEach((course, index) => {
+render()
 
-    const previousCourse = courses[index - 1];
-
-    const unlocked =
-      index === 0 || isCourseValidated(previousCourse.id);
-
-    const result = getCourseResult(course.id);
-
-    let element;
-
-    if (unlocked) {
-
-      element = document.createElement("a");
-      element.href = course.file;
-      element.className = "course-link";
-
-    } else {
-
-      element = document.createElement("div");
-      element.className = "course-locked";
-
-    }
-
-    let tags = `<span class="tag">${course.exercises} exercices</span>`;
-
-    if (result && result.validated) {
-
-      tags += `<span class="tag success">Validé - ${result.percent}%</span>`;
-
-    } else if (result && !result.validated && result.percent > 0) {
-
-      tags += `<span class="tag warning">Non validé - ${result.percent}%</span>`;
-
-    } else if (!unlocked) {
-
-      tags += `<span class="tag locked">Bloqué</span>`;
-    }
-
-    let lockedMessage = "";
-
-    if (!unlocked && previousCourse) {
-
-      lockedMessage =
-        `<p class="small-note">Valide d'abord le cours "${previousCourse.title}" à 80% minimum.</p>`;
-    }
-
-    element.innerHTML = `
-      <h3>${course.title}</h3>
-      <p>${course.description}</p>
-      ${tags}
-      ${lockedMessage}
-    `;
-
-    container.appendChild(element);
-
-  });
 }
 
-function renderProgress() {
+function courseResult(id){
 
-  const validatedCount =
-    courses.filter(course => isCourseValidated(course.id)).length;
+if(!currentProfile) return null
 
-  const percent =
-    Math.round((validatedCount / courses.length) * 100);
-
-  document.getElementById("progressYouBar").style.width =
-    percent + "%";
-
-  document.getElementById("progressYouText").textContent =
-    percent + "% complété";
+return{
+validated:currentProfile[id+"_validated"],
+percent:currentProfile[id+"_percent"]
 }
 
-function resetProgress() {
-
-  courses.forEach(course => {
-
-    localStorage.removeItem("course_" + course.id);
-
-  });
-
-  renderCourses();
-  renderProgress();
 }
 
-window.resetProgress = resetProgress;
+function validated(id){
 
-supabase.auth.onAuthStateChange(async () => {
+const r=courseResult(id)
 
-  await initAuth();
+return r && r.validated
 
-});
+}
 
-initAuth();
+function render(){
+
+renderCourses()
+renderProgress()
+
+}
+
+function renderCourses(){
+
+const list=document.getElementById("coursesList")
+
+list.innerHTML=""
+
+courses.forEach((c,i)=>{
+
+const prev=courses[i-1]
+
+const unlocked=i===0 || validated(prev.id)
+
+const result=courseResult(c.id)
+
+let el
+
+if(unlocked){
+
+el=document.createElement("a")
+el.href=c.file
+el.className="course-link"
+
+}else{
+
+el=document.createElement("div")
+el.className="course-locked"
+
+}
+
+let tag=`<span class="tag">${c.exercises} exercices</span>`
+
+if(result && result.validated){
+
+tag+=`<span class="tag success">validé ${result.percent}%</span>`
+
+}else if(result){
+
+tag+=`<span class="tag warning">${result.percent}%</span>`
+
+}else if(!unlocked){
+
+tag+=`<span class="tag locked">bloqué</span>`
+
+}
+
+el.innerHTML=`
+
+<h3>${c.title}</h3>
+
+${tag}
+
+`
+
+list.appendChild(el)
+
+})
+
+}
+
+function renderProgress(){
+
+const done=courses.filter(c=>validated(c.id)).length
+
+const percent=Math.round((done/courses.length)*100)
+
+document.getElementById("progressBar").style.width=percent+"%"
+
+document.getElementById("progressText").textContent=percent+"% complété"
+
+}
+
+supabase.auth.onAuthStateChange(()=>{
+initAuth()
+})
+
+initAuth()
 
 </script>
+
+</body>
+</html>
