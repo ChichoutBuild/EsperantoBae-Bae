@@ -228,7 +228,7 @@ function emailFromLogin(login){
 return LOGIN_MAP[login]||login
 }
 
-async function signIn(){
+window.signIn = async function(){
 
 const login=document.getElementById("loginId").value.trim().toLowerCase()
 const password=document.getElementById("password").value
@@ -246,7 +246,7 @@ initAuth()
 
 }
 
-async function signOut(){
+window.signOut = async function(){
 
 await supabase.auth.signOut()
 
