@@ -1,0 +1,55 @@
+const API_URL = "COLLE_ICI_L_URL_DU_WEB_APP";
+
+async function apiPost(data) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    body: new URLSearchParams(data)
+  });
+  return response.json();
+}
+
+function saveSession(session) {
+  localStorage.setItem("bae_session", JSON.stringify(session));
+}
+
+function getSession() {
+  return JSON.parse(localStorage.getItem("bae_session") || "null");
+}
+
+function clearSession() {
+  localStorage.removeItem("bae_session");
+}
+
+async function requireAuth() {
+  const session = getSession();
+
+  if (!session || !session.token) {
+    window.location.href = "index.html";
+    return null;
+  }
+
+  const res = await apiPost({
+    action: "validate",
+    token: session.token
+  });
+
+  if (!res.ok) {
+    clearSession();
+    window.location.href = "index.html";
+    return null;
+  }
+
+  return session;
+}
+
+async function logout() {
+  const session = getSession();
+  if (session && session.token) {
+    await apiPost({
+      action: "logout",
+      token: session.token
+    });
+  }
+  clearSession();
+  window.location.href = "index.html";
+}
