@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Esperanto Duo - Salutations</title>
+  <title>Salutations</title>
+  <link rel="icon" href="data:,">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -24,18 +25,6 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       margin-bottom: 24px;
     }
-    h1, h2, h3 { margin-top: 0; }
-    .subtitle, .lesson-info, .intro-text {
-      color: #6b7280;
-      line-height: 1.6;
-    }
-    .back-link {
-      display: inline-block;
-      margin-bottom: 18px;
-      text-decoration: none;
-      color: #111827;
-      font-weight: bold;
-    }
     .lesson-box {
       background: #f9fafb;
       border: 1px solid #e5e7eb;
@@ -43,172 +32,70 @@
       padding: 18px;
       margin-top: 16px;
     }
-    .start-btn, button.primary, button.secondary {
+    .buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    button, .back {
       border: none;
       border-radius: 14px;
       padding: 12px 18px;
       cursor: pointer;
       font-size: 15px;
-    }
-    .start-btn, button.primary {
       background: #111827;
       color: white;
+      text-decoration: none;
     }
-    button.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-    .buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .question {
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-    .choices {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+    .secondary { background: #e5e7eb; color: #111827; }
+    .choices { display: grid; gap: 12px; margin-bottom: 20px; }
     .choice {
       border: 1px solid #d1d5db;
       background: white;
       padding: 14px;
       border-radius: 14px;
       cursor: pointer;
-      font-size: 16px;
     }
-    .choice.selected {
-      background: #111827;
-      color: white;
-      border-color: #111827;
-    }
+    .choice.selected { background: #111827; color: white; }
     input[type="text"] {
       width: 100%;
       padding: 14px;
       border-radius: 14px;
       border: 1px solid #d1d5db;
-      font-size: 16px;
       margin-bottom: 20px;
     }
-    .result {
-      margin: 18px 0;
-      padding: 16px;
-      border-radius: 14px;
-      background: #f3f4f6;
-    }
+    .result { margin: 18px 0; padding: 16px; border-radius: 14px; }
     .good { background: #dcfce7; }
     .bad { background: #fee2e2; }
-    .vocab-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-    .vocab-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 12px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <a class="back-link" href="index.html">← Retour à l’accueil</a>
+      <a class="back secondary" href="home.html">← Retour</a>
       <h1>Salutations</h1>
-      <p class="subtitle">
-        Dans ce cours, vous allez apprendre quelques mots très utiles pour commencer à parler en esperanto.
-      </p>
+      <p>Apprendre les mots de base pour saluer.</p>
     </div>
 
     <div class="card" id="app"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  <script src="config.js"></script>
   <script>
-    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
-    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const lesson = {
       id: "salutations",
       title: "Salutations",
-      introTitle: "Mini-cours",
-      introText: `
-        L’esperanto est une langue pensée pour être simple et régulière.
-        Pour commencer, il faut apprendre quelques mots très fréquents de la vie quotidienne.
-        Dans ce thème, vous allez retenir comment saluer quelqu’un, remercier, répondre oui ou non,
-        et dire bonne nuit.
-      `,
-      notes: [
-        "Saluton = bonjour / salut",
-        "Dankon = merci",
-        "Jes = oui",
-        "Ne = non",
-        "Bonan nokton = bonne nuit"
-      ],
+      introText: "Saluton = bonjour, Dankon = merci, Jes = oui, Ne = non, Bonan nokton = bonne nuit.",
+      notes: ["Saluton = bonjour", "Dankon = merci", "Jes = oui", "Ne = non", "Bonan nokton = bonne nuit"],
       exercises: [
-        {
-          type: "mcq",
-          prompt: "Comment dit-on 'bonjour' en Esperanto ?",
-          choices: ["Dankon", "Saluton", "Jes", "Ne"],
-          answer: "Saluton",
-          explanation: "'Saluton' veut dire 'bonjour' ou 'salut'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en français : 'Dankon'",
-          answer: "merci",
-          explanation: "'Dankon' signifie 'merci'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'oui'",
-          answer: "jes",
-          explanation: "'Jes' signifie 'oui'."
-        },
-        {
-          type: "mcq",
-          prompt: "Quel mot signifie 'non' ?",
-          choices: ["Ne", "Jes", "Saluton", "Amo"],
-          answer: "Ne",
-          explanation: "'Ne' signifie 'non'."
-        },
-        {
-          type: "mcq",
-          prompt: "Lequel de ces mots veut dire 'merci' ?",
-          choices: ["Libro", "Akvo", "Dankon", "Bela"],
-          answer: "Dankon",
-          explanation: "'Dankon' est le mot pour dire 'merci'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'non'",
-          answer: "ne",
-          explanation: "'Ne' signifie 'non'."
-        },
-        {
-          type: "mcq",
-          prompt: "Comment dit-on 'bonne nuit' ?",
-          choices: ["Bonan nokton", "Saluton", "Jes", "Mi estas"],
-          answer: "Bonan nokton",
-          explanation: "'Bonan nokton' signifie 'bonne nuit'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en français : 'Saluton'",
-          answer: "bonjour",
-          explanation: "'Saluton' peut se traduire par 'bonjour' ou 'salut'."
-        }
+        { type: "mcq", prompt: "Comment dit-on bonjour ?", choices: ["Dankon", "Saluton", "Jes", "Ne"], answer: "Saluton", explanation: "Saluton = bonjour." },
+        { type: "text", prompt: "Traduis 'Dankon'", answer: "merci", explanation: "Dankon = merci." },
+        { type: "text", prompt: "Traduis 'oui' en esperanto", answer: "jes", explanation: "Jes = oui." },
+        { type: "mcq", prompt: "Quel mot signifie non ?", choices: ["Ne", "Jes", "Saluton", "Amo"], answer: "Ne", explanation: "Ne = non." },
+        { type: "mcq", prompt: "Quel mot veut dire merci ?", choices: ["Libro", "Akvo", "Dankon", "Bela"], answer: "Dankon", explanation: "Dankon = merci." },
+        { type: "text", prompt: "Traduis 'non' en esperanto", answer: "ne", explanation: "Ne = non." },
+        { type: "mcq", prompt: "Comment dit-on bonne nuit ?", choices: ["Bonan nokton", "Saluton", "Jes", "Mi estas"], answer: "Bonan nokton", explanation: "Bonan nokton = bonne nuit." },
+        { type: "text", prompt: "Traduis 'Saluton'", answer: "bonjour", explanation: "Saluton = bonjour / salut." }
       ]
     };
 
+    let session = null;
     let state = {
       started: false,
       exerciseIndex: 0,
@@ -233,42 +120,20 @@
       return lesson.exercises[state.exerciseIndex];
     }
 
-    async function saveCourseResultToSupabase(percent, validated) {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) return;
-
-      const updateData = {
-        updated_at: new Date().toISOString()
-      };
-
-      updateData[lesson.id + "_percent"] = percent;
-      updateData[lesson.id + "_validated"] = validated;
-
-      const { error } = await supabase
-        .from("profiles")
-        .update(updateData)
-        .eq("id", user.id);
-
-      if (error) {
-        console.error(error);
-      }
-    }
-
     async function saveCourseResult() {
       const percent = Math.round((state.score / lesson.exercises.length) * 100);
-      const validated = percent >= 80;
 
-      localStorage.setItem("course_" + lesson.id, JSON.stringify({
-        score: state.score,
-        total: lesson.exercises.length,
-        percent: percent,
-        validated: validated
-      }));
+      await apiPost({
+        action: "saveCourse",
+        token: session.token,
+        course_id: lesson.id,
+        percent: String(percent)
+      });
 
-      await saveCourseResultToSupabase(percent, validated);
-
-      return { percent, validated };
+      return {
+        percent,
+        validated: percent >= 80
+      };
     }
 
     function startLesson() {
@@ -280,14 +145,8 @@
       const ex = currentExercise();
       const userAnswer = ex.type === "mcq" ? state.selectedChoice : state.typedAnswer;
       state.checked = true;
-
-      if (normalize(userAnswer) === normalize(ex.answer)) {
-        state.score++;
-        state.correct = true;
-      } else {
-        state.correct = false;
-      }
-
+      state.correct = normalize(userAnswer) === normalize(ex.answer);
+      if (state.correct) state.score++;
       render();
     }
 
@@ -305,75 +164,46 @@
     }
 
     function resetLesson() {
-      state.started = false;
-      state.exerciseIndex = 0;
-      state.score = 0;
-      state.checked = false;
-      state.selectedChoice = "";
-      state.typedAnswer = "";
-      state.finished = false;
-      state.correct = false;
+      state = {
+        started: false,
+        exerciseIndex: 0,
+        score: 0,
+        checked: false,
+        selectedChoice: "",
+        typedAnswer: "",
+        finished: false,
+        correct: false
+      };
       render();
     }
 
     function renderIntro(app) {
       app.innerHTML = `
-        <h2>${lesson.introTitle}</h2>
-        <p class="intro-text">${lesson.introText}</p>
-
+        <h2>Mini-cours</h2>
+        <p>${lesson.introText}</p>
         <div class="lesson-box">
-          <h3>À retenir</h3>
-          <div class="vocab-grid">
-            ${lesson.notes.map(note => `<div class="vocab-item">${note}</div>`).join("")}
-          </div>
+          ${lesson.notes.map(n => `<div>${n}</div>`).join("")}
         </div>
-
         <div class="buttons">
-          <button class="start-btn" onclick="startLesson()">Commencer les exercices</button>
+          <button onclick="startLesson()">Commencer</button>
         </div>
       `;
     }
 
     async function renderFinished(app) {
       const result = await saveCourseResult();
-
       app.innerHTML = `
         <h2>${lesson.title} terminée 🎉</h2>
-        <p>
-          Score : <strong>${state.score}/${lesson.exercises.length}</strong>
-          (${result.percent}%)
-        </p>
-
+        <p>Score : <strong>${state.score}/${lesson.exercises.length}</strong> (${result.percent}%)</p>
         <div class="result ${result.validated ? "good" : "bad"}">
           <strong>${result.validated ? "Cours validé ✅" : "Cours non validé ❌"}</strong>
-          <p>
-            ${result.validated
-              ? "Bravo ! Tu as atteint au moins 80%, le cours suivant est débloqué."
-              : "Il faut au moins 80% pour valider ce cours et débloquer le suivant."}
-          </p>
+          <p>${result.validated ? "Le cours suivant est débloqué." : "Il faut 80% minimum pour valider."}</p>
         </div>
-
         <div class="buttons">
-          <button class="primary" onclick="resetLesson()">Revoir le cours</button>
-          <a href="index.html"><button class="secondary">Retour à l’accueil</button></a>
+          <button onclick="resetLesson()">Revoir</button>
+          <a class="back secondary" href="home.html">Retour accueil</a>
         </div>
       `;
-    }
-
-    async function render() {
-      const app = document.getElementById("app");
-
-      if (!state.started) {
-        renderIntro(app);
-        return;
-      }
-
-      if (state.finished) {
-        await renderFinished(app);
-        return;
-      }
-
-      renderExercise(app);
     }
 
     function renderExercise(app) {
@@ -385,9 +215,7 @@
           <div class="choices">
             ${ex.choices.map(choice => `
               <button class="choice ${state.selectedChoice === choice ? "selected" : ""}"
-                onclick="selectChoice('${choice.replace(/'/g, "\\'")}')">
-                ${choice}
-              </button>
+                onclick="selectChoice('${choice.replace(/'/g, "\\'")}')">${choice}</button>
             `).join("")}
           </div>
         `;
@@ -415,19 +243,26 @@
       }
 
       app.innerHTML = `
-        <p class="lesson-info">Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
-        <div class="question">${ex.prompt}</div>
+        <p>Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
+        <h2>${ex.prompt}</h2>
         ${answerBlock}
         ${resultBlock}
         <div class="buttons">
           ${
             !state.checked
-              ? `<button class="primary" onclick="verifyAnswer()">Vérifier</button>`
-              : `<button class="primary" onclick="nextExercise()">${state.exerciseIndex < lesson.exercises.length - 1 ? "Suivant" : "Terminer"}</button>`
+              ? `<button onclick="verifyAnswer()">Vérifier</button>`
+              : `<button onclick="nextExercise()">${state.exerciseIndex < lesson.exercises.length - 1 ? "Suivant" : "Terminer"}</button>`
           }
           <button class="secondary" onclick="resetLesson()">Retour au cours</button>
         </div>
       `;
+    }
+
+    async function render() {
+      const app = document.getElementById("app");
+      if (!state.started) return renderIntro(app);
+      if (state.finished) return renderFinished(app);
+      renderExercise(app);
     }
 
     function selectChoice(choice) {
@@ -440,7 +275,11 @@
       state.typedAnswer = value;
     }
 
-    render();
+    (async function init() {
+      session = await requireAuth();
+      if (!session) return;
+      render();
+    })();
   </script>
 </body>
 </html>
