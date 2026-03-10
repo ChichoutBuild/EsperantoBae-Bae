@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Esperanto Duo - Bases</title>
+  <title>Bases</title>
+  <link rel="icon" href="data:,">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -24,18 +25,6 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       margin-bottom: 24px;
     }
-    h1, h2, h3 { margin-top: 0; }
-    .subtitle, .lesson-info, .intro-text {
-      color: #6b7280;
-      line-height: 1.6;
-    }
-    .back-link {
-      display: inline-block;
-      margin-bottom: 18px;
-      text-decoration: none;
-      color: #111827;
-      font-weight: bold;
-    }
     .lesson-box {
       background: #f9fafb;
       border: 1px solid #e5e7eb;
@@ -43,174 +32,70 @@
       padding: 18px;
       margin-top: 16px;
     }
-    .start-btn, button.primary, button.secondary {
+    .buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    button, .back {
       border: none;
       border-radius: 14px;
       padding: 12px 18px;
       cursor: pointer;
       font-size: 15px;
-    }
-    .start-btn, button.primary {
       background: #111827;
       color: white;
+      text-decoration: none;
     }
-    button.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-    .buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .question {
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-    .choices {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+    .secondary { background: #e5e7eb; color: #111827; }
+    .choices { display: grid; gap: 12px; margin-bottom: 20px; }
     .choice {
       border: 1px solid #d1d5db;
       background: white;
       padding: 14px;
       border-radius: 14px;
       cursor: pointer;
-      font-size: 16px;
     }
-    .choice.selected {
-      background: #111827;
-      color: white;
-      border-color: #111827;
-    }
+    .choice.selected { background: #111827; color: white; }
     input[type="text"] {
       width: 100%;
       padding: 14px;
       border-radius: 14px;
       border: 1px solid #d1d5db;
-      font-size: 16px;
       margin-bottom: 20px;
     }
-    .result {
-      margin: 18px 0;
-      padding: 16px;
-      border-radius: 14px;
-      background: #f3f4f6;
-    }
+    .result { margin: 18px 0; padding: 16px; border-radius: 14px; }
     .good { background: #dcfce7; }
     .bad { background: #fee2e2; }
-    .vocab-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 14px;
-    }
-    .vocab-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 12px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <a class="back-link" href="index.html">← Retour à l’accueil</a>
+      <a class="back secondary" href="home.html">← Retour</a>
       <h1>Bases</h1>
-      <p class="subtitle">
-        Dans ce cours, vous allez voir quelques structures très utiles pour commencer à construire des phrases simples.
-      </p>
+      <p>Les premières structures utiles.</p>
     </div>
 
     <div class="card" id="app"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  <script src="config.js"></script>
   <script>
-    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
-    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const lesson = {
       id: "bases",
       title: "Bases",
-      introTitle: "Mini-cours",
-      introText: `
-        En esperanto, beaucoup de phrases simples reposent sur une structure très claire.
-        Par exemple, "Mi" veut dire "je", et "estas" veut dire "suis / es / est" selon le sujet.
-        Donc "Mi estas" veut dire "je suis".
-        C’est une structure essentielle pour parler de soi, de ses émotions ou de son état.
-      `,
-      notes: [
-        "Mi = je",
-        "Vi = tu / vous",
-        "Ni = nous",
-        "Estas = suis / es / est / sommes / êtes / sont",
-        "Amo = amour",
-        "Feliĉa = heureux / contente"
-      ],
+      introText: "Mi = je, Ni = nous, Estas = suis/es/est..., Amo = amour, Feliĉa = heureux.",
+      notes: ["Mi = je", "Ni = nous", "Estas = suis/es/est", "Amo = amour", "Feliĉa = heureux"],
       exercises: [
-        {
-          type: "mcq",
-          prompt: "Que signifie 'Mi estas...' ?",
-          choices: ["Tu es...", "Je suis...", "Nous sommes...", "Ils sont..."],
-          answer: "Je suis...",
-          explanation: "'Mi' = je, 'estas' = suis."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'je suis content'",
-          answer: "mi estas felica",
-          explanation: "Version simplifiée ici : 'mi estas feliĉa'."
-        },
-        {
-          type: "mcq",
-          prompt: "Quel mot veut dire 'amour' ?",
-          choices: ["Akvo", "Amo", "Hundo", "Libro"],
-          answer: "Amo",
-          explanation: "'Amo' signifie amour."
-        },
-        {
-          type: "mcq",
-          prompt: "Que signifie 'Mi' ?",
-          choices: ["Je", "Tu", "Nous", "Amour"],
-          answer: "Je",
-          explanation: "'Mi' veut dire 'je'."
-        },
-        {
-          type: "mcq",
-          prompt: "Que signifie 'Ni' ?",
-          choices: ["Nous", "Oui", "Elle", "Merci"],
-          answer: "Nous",
-          explanation: "'Ni' signifie 'nous'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en français : 'Amo'",
-          answer: "amour",
-          explanation: "'Amo' signifie 'amour'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'je suis'",
-          answer: "mi estas",
-          explanation: "'Mi estas' veut dire 'je suis'."
-        },
-        {
-          type: "mcq",
-          prompt: "Quel mot signifie 'heureux / contente' ?",
-          choices: ["Feliĉa", "Libro", "Akvo", "Ne"],
-          answer: "Feliĉa",
-          explanation: "'Feliĉa' signifie heureux ou contente."
-        }
+        { type: "mcq", prompt: "Que signifie Mi estas ?", choices: ["Tu es", "Je suis", "Nous sommes", "Ils sont"], answer: "Je suis", explanation: "Mi = je, estas = suis." },
+        { type: "text", prompt: "Traduis 'je suis content' en esperanto simplifié", answer: "mi estas felica", explanation: "Version simplifiée : mi estas feliĉa." },
+        { type: "mcq", prompt: "Quel mot veut dire amour ?", choices: ["Akvo", "Amo", "Libro", "Ne"], answer: "Amo", explanation: "Amo = amour." },
+        { type: "mcq", prompt: "Que signifie Mi ?", choices: ["Je", "Tu", "Nous", "Merci"], answer: "Je", explanation: "Mi = je." },
+        { type: "mcq", prompt: "Que signifie Ni ?", choices: ["Nous", "Oui", "Elle", "Merci"], answer: "Nous", explanation: "Ni = nous." },
+        { type: "text", prompt: "Traduis 'Amo'", answer: "amour", explanation: "Amo = amour." },
+        { type: "text", prompt: "Traduis 'je suis' en esperanto", answer: "mi estas", explanation: "Mi estas = je suis." },
+        { type: "mcq", prompt: "Quel mot signifie heureux ?", choices: ["Feliĉa", "Libro", "Akvo", "Ne"], answer: "Feliĉa", explanation: "Feliĉa = heureux." }
       ]
     };
 
+    let session = null;
     let state = {
       started: false,
       exerciseIndex: 0,
@@ -235,42 +120,20 @@
       return lesson.exercises[state.exerciseIndex];
     }
 
-    async function saveCourseResultToSupabase(percent, validated) {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) return;
-
-      const updateData = {
-        updated_at: new Date().toISOString()
-      };
-
-      updateData[lesson.id + "_percent"] = percent;
-      updateData[lesson.id + "_validated"] = validated;
-
-      const { error } = await supabase
-        .from("profiles")
-        .update(updateData)
-        .eq("id", user.id);
-
-      if (error) {
-        console.error(error);
-      }
-    }
-
     async function saveCourseResult() {
       const percent = Math.round((state.score / lesson.exercises.length) * 100);
-      const validated = percent >= 80;
 
-      localStorage.setItem("course_" + lesson.id, JSON.stringify({
-        score: state.score,
-        total: lesson.exercises.length,
-        percent: percent,
-        validated: validated
-      }));
+      await apiPost({
+        action: "saveCourse",
+        token: session.token,
+        course_id: lesson.id,
+        percent: String(percent)
+      });
 
-      await saveCourseResultToSupabase(percent, validated);
-
-      return { percent, validated };
+      return {
+        percent,
+        validated: percent >= 80
+      };
     }
 
     function startLesson() {
@@ -282,14 +145,8 @@
       const ex = currentExercise();
       const userAnswer = ex.type === "mcq" ? state.selectedChoice : state.typedAnswer;
       state.checked = true;
-
-      if (normalize(userAnswer) === normalize(ex.answer)) {
-        state.score++;
-        state.correct = true;
-      } else {
-        state.correct = false;
-      }
-
+      state.correct = normalize(userAnswer) === normalize(ex.answer);
+      if (state.correct) state.score++;
       render();
     }
 
@@ -307,75 +164,46 @@
     }
 
     function resetLesson() {
-      state.started = false;
-      state.exerciseIndex = 0;
-      state.score = 0;
-      state.checked = false;
-      state.selectedChoice = "";
-      state.typedAnswer = "";
-      state.finished = false;
-      state.correct = false;
+      state = {
+        started: false,
+        exerciseIndex: 0,
+        score: 0,
+        checked: false,
+        selectedChoice: "",
+        typedAnswer: "",
+        finished: false,
+        correct: false
+      };
       render();
     }
 
     function renderIntro(app) {
       app.innerHTML = `
-        <h2>${lesson.introTitle}</h2>
-        <p class="intro-text">${lesson.introText}</p>
-
+        <h2>Mini-cours</h2>
+        <p>${lesson.introText}</p>
         <div class="lesson-box">
-          <h3>À retenir</h3>
-          <div class="vocab-grid">
-            ${lesson.notes.map(note => `<div class="vocab-item">${note}</div>`).join("")}
-          </div>
+          ${lesson.notes.map(n => `<div>${n}</div>`).join("")}
         </div>
-
         <div class="buttons">
-          <button class="start-btn" onclick="startLesson()">Commencer les exercices</button>
+          <button onclick="startLesson()">Commencer</button>
         </div>
       `;
     }
 
     async function renderFinished(app) {
       const result = await saveCourseResult();
-
       app.innerHTML = `
         <h2>${lesson.title} terminée 🎉</h2>
-        <p>
-          Score : <strong>${state.score}/${lesson.exercises.length}</strong>
-          (${result.percent}%)
-        </p>
-
+        <p>Score : <strong>${state.score}/${lesson.exercises.length}</strong> (${result.percent}%)</p>
         <div class="result ${result.validated ? "good" : "bad"}">
           <strong>${result.validated ? "Cours validé ✅" : "Cours non validé ❌"}</strong>
-          <p>
-            ${result.validated
-              ? "Bravo ! Ce cours est validé."
-              : "Il faut au moins 80% pour valider ce cours."}
-          </p>
+          <p>${result.validated ? "Bravo." : "Il faut 80% minimum pour valider."}</p>
         </div>
-
         <div class="buttons">
-          <button class="primary" onclick="resetLesson()">Revoir le cours</button>
-          <a href="index.html"><button class="secondary">Retour à l’accueil</button></a>
+          <button onclick="resetLesson()">Revoir</button>
+          <a class="back secondary" href="home.html">Retour accueil</a>
         </div>
       `;
-    }
-
-    async function render() {
-      const app = document.getElementById("app");
-
-      if (!state.started) {
-        renderIntro(app);
-        return;
-      }
-
-      if (state.finished) {
-        await renderFinished(app);
-        return;
-      }
-
-      renderExercise(app);
     }
 
     function renderExercise(app) {
@@ -387,9 +215,7 @@
           <div class="choices">
             ${ex.choices.map(choice => `
               <button class="choice ${state.selectedChoice === choice ? "selected" : ""}"
-                onclick="selectChoice('${choice.replace(/'/g, "\\'")}')">
-                ${choice}
-              </button>
+                onclick="selectChoice('${choice.replace(/'/g, "\\'")}')">${choice}</button>
             `).join("")}
           </div>
         `;
@@ -417,19 +243,26 @@
       }
 
       app.innerHTML = `
-        <p class="lesson-info">Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
-        <div class="question">${ex.prompt}</div>
+        <p>Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
+        <h2>${ex.prompt}</h2>
         ${answerBlock}
         ${resultBlock}
         <div class="buttons">
           ${
             !state.checked
-              ? `<button class="primary" onclick="verifyAnswer()">Vérifier</button>`
-              : `<button class="primary" onclick="nextExercise()">${state.exerciseIndex < lesson.exercises.length - 1 ? "Suivant" : "Terminer"}</button>`
+              ? `<button onclick="verifyAnswer()">Vérifier</button>`
+              : `<button onclick="nextExercise()">${state.exerciseIndex < lesson.exercises.length - 1 ? "Suivant" : "Terminer"}</button>`
           }
           <button class="secondary" onclick="resetLesson()">Retour au cours</button>
         </div>
       `;
+    }
+
+    async function render() {
+      const app = document.getElementById("app");
+      if (!state.started) return renderIntro(app);
+      if (state.finished) return renderFinished(app);
+      renderExercise(app);
     }
 
     function selectChoice(choice) {
@@ -442,7 +275,28 @@
       state.typedAnswer = value;
     }
 
-    render();
+    (async function init() {
+      session = await requireAuth();
+      if (!session) return;
+
+      const progressRes = await apiPost({
+        action: "getProgress",
+        token: session.token
+      });
+
+      if (!progressRes.ok) {
+        clearSession();
+        window.location.href = "index.html";
+        return;
+      }
+
+      if ((progressRes.progress.salutations_percent || 0) < 80) {
+        window.location.href = "home.html";
+        return;
+      }
+
+      render();
+    })();
   </script>
 </body>
 </html>
