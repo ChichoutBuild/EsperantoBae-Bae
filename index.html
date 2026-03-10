@@ -212,6 +212,58 @@
       line-height: 1.5;
     }
 
+    .auth-box {
+      margin-top: 18px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .auth-box h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      margin-bottom: 10px;
+      background: white;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .auth-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      background: #111827;
+      color: white;
+    }
+
+    .auth-btn.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .auth-message {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
     @media (max-width: 860px) {
       .layout {
         grid-template-columns: 1fr;
@@ -266,6 +318,20 @@
           Un cours est validé seulement si le score final est d'au moins <strong>80%</strong>.
           Tant qu’un cours n’est pas validé, le suivant reste bloqué.
         </div>
+
+        <div class="auth-box">
+          <h3>Compte</h3>
+          <input id="email" class="auth-input" type="email" placeholder="Ton email" />
+          <input id="password" class="auth-input" type="password" placeholder="Ton mot de passe" />
+
+          <div class="auth-buttons">
+            <button class="auth-btn" onclick="signUp()">Créer un compte</button>
+            <button class="auth-btn" onclick="signIn()">Se connecter</button>
+            <button class="auth-btn secondary" onclick="signOut()">Se déconnecter</button>
+          </div>
+
+          <div id="authMessage" class="auth-message">Non connecté.</div>
+        </div>
       </div>
 
       <div class="card">
@@ -279,19 +345,13 @@
     </div>
   </div>
 
-  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
-    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+    const SUPABASE_URL = "https://bsmtfqksrhhjrvwjzoad.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_vsbgly8m-il5_YYbiiEAcA_OCi1gYcC";
 
-    const supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
-    console.log("Supabase connecté :", supabase);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const courses = [
       {
@@ -310,7 +370,153 @@
       }
     ];
 
+    let currentUser = null;
+    let currentProfile = null;
+
+    async function signUp() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        setAuthMessage("Remplis l’email et le mot de passe.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+
+      setAuthMessage("Compte créé. Vérifie ton email si Supabase demande une confirmation.");
+      await initAuth();
+    }
+
+    async function signIn() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        setAuthMessage("Remplis l’email et le mot de passe.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setAuthMessage(error.message);
+        return;
+      }
+
+      setAuthMessage("Connexion réussie.");
+      await initAuth();
+    }
+
+    async function signOut() {
+      await supabase.auth.signOut();
+      currentUser = null;
+      currentProfile = null;
+      setAuthMessage("Déconnecté.");
+      renderCourses();
+      renderProgress();
+    }
+
+    function setAuthMessage(message) {
+      document.getElementById("authMessage").textContent = message;
+    }
+
+    async function ensureProfile() {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+      if (!user) return;
+
+      const { data: existing, error: selectError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (selectError) {
+        console.error(selectError);
+        return;
+      }
+
+      if (!existing) {
+        const { error: insertError } = await supabase
+          .from("profiles")
+          .insert({
+            id: user.id,
+            email: user.email
+          });
+
+        if (insertError) {
+          console.error(insertError);
+        }
+      }
+    }
+
+    async function loadProfile() {
+      if (!currentUser) {
+        currentProfile = null;
+        renderCourses();
+        renderProgress();
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (error) {
+        console.error(error);
+        currentProfile = null;
+      } else {
+        currentProfile = data;
+      }
+
+      renderCourses();
+      renderProgress();
+    }
+
+    async function initAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session && session.user) {
+        currentUser = session.user;
+        await ensureProfile();
+        await loadProfile();
+        setAuthMessage("Connecté en tant que " + session.user.email);
+      } else {
+        currentUser = null;
+        currentProfile = null;
+        setAuthMessage("Non connecté.");
+        renderCourses();
+        renderProgress();
+      }
+    }
+
     function getCourseResult(courseId) {
+      if (currentProfile) {
+        const validated = currentProfile[courseId + "_validated"];
+        const percent = currentProfile[courseId + "_percent"];
+
+        if (validated !== undefined && percent !== undefined) {
+          return {
+            validated: !!validated,
+            percent: percent
+          };
+        }
+      }
+
       const raw = localStorage.getItem("course_" + courseId);
       return raw ? JSON.parse(raw) : null;
     }
@@ -344,7 +550,7 @@
 
         if (result && result.validated) {
           tags += `<span class="tag success">Validé - ${result.percent}%</span>`;
-        } else if (result && !result.validated) {
+        } else if (result && !result.validated && result.percent > 0) {
           tags += `<span class="tag warning">Non validé - ${result.percent}%</span>`;
         } else if (!unlocked) {
           tags += `<span class="tag locked">Bloqué</span>`;
@@ -378,15 +584,17 @@
       courses.forEach(course => {
         localStorage.removeItem("course_" + course.id);
       });
-
       renderCourses();
       renderProgress();
     }
 
     window.resetProgress = resetProgress;
 
-    renderCourses();
-    renderProgress();
+    supabase.auth.onAuthStateChange(async () => {
+      await initAuth();
+    });
+
+    initAuth();
   </script>
 </body>
 </html>
