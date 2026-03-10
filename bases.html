@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Esperanto Duo - Salutations</title>
+  <title>Esperanto Duo - Bases</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -120,85 +120,93 @@
   <div class="container">
     <div class="header">
       <a class="back-link" href="index.html">← Retour à l’accueil</a>
-      <h1>Salutations</h1>
+      <h1>Bases</h1>
       <p class="subtitle">
-        Dans ce cours, vous allez apprendre quelques mots très utiles pour commencer à parler en esperanto.
+        Dans ce cours, vous allez voir quelques structures très utiles pour commencer à construire des phrases simples.
       </p>
     </div>
 
     <div class="card" id="app"></div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    const SUPABASE_URL = "https://TON_PROJECT_ID.supabase.co";
+    const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const lesson = {
-      id: "salutations",
-      title: "Salutations",
+      id: "bases",
+      title: "Bases",
       introTitle: "Mini-cours",
       introText: `
-        L’esperanto est une langue pensée pour être simple et régulière.
-        Pour commencer, il faut apprendre quelques mots très fréquents de la vie quotidienne.
-        Dans ce thème, vous allez retenir comment saluer quelqu’un, remercier, répondre oui ou non,
-        et dire bonne nuit.
+        En esperanto, beaucoup de phrases simples reposent sur une structure très claire.
+        Par exemple, "Mi" veut dire "je", et "estas" veut dire "suis / es / est" selon le sujet.
+        Donc "Mi estas" veut dire "je suis".
+        C’est une structure essentielle pour parler de soi, de ses émotions ou de son état.
       `,
       notes: [
-        "Saluton = bonjour / salut",
-        "Dankon = merci",
-        "Jes = oui",
-        "Ne = non",
-        "Bonan nokton = bonne nuit"
+        "Mi = je",
+        "Vi = tu / vous",
+        "Ni = nous",
+        "Estas = suis / es / est / sommes / êtes / sont",
+        "Amo = amour",
+        "Feliĉa = heureux / contente"
       ],
       exercises: [
         {
           type: "mcq",
-          prompt: "Comment dit-on 'bonjour' en Esperanto ?",
-          choices: ["Dankon", "Saluton", "Jes", "Ne"],
-          answer: "Saluton",
-          explanation: "'Saluton' veut dire 'bonjour' ou 'salut'."
+          prompt: "Que signifie 'Mi estas...' ?",
+          choices: ["Tu es...", "Je suis...", "Nous sommes...", "Ils sont..."],
+          answer: "Je suis...",
+          explanation: "'Mi' = je, 'estas' = suis."
         },
         {
           type: "text",
-          prompt: "Traduis en français : 'Dankon'",
-          answer: "merci",
-          explanation: "'Dankon' signifie 'merci'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'oui'",
-          answer: "jes",
-          explanation: "'Jes' signifie 'oui'."
+          prompt: "Traduis en Esperanto : 'je suis content'",
+          answer: "mi estas felica",
+          explanation: "Version simplifiée ici : 'mi estas feliĉa'."
         },
         {
           type: "mcq",
-          prompt: "Quel mot signifie 'non' ?",
-          choices: ["Ne", "Jes", "Saluton", "Amo"],
-          answer: "Ne",
-          explanation: "'Ne' signifie 'non'."
+          prompt: "Quel mot veut dire 'amour' ?",
+          choices: ["Akvo", "Amo", "Hundo", "Libro"],
+          answer: "Amo",
+          explanation: "'Amo' signifie amour."
         },
         {
           type: "mcq",
-          prompt: "Lequel de ces mots veut dire 'merci' ?",
-          choices: ["Libro", "Akvo", "Dankon", "Bela"],
-          answer: "Dankon",
-          explanation: "'Dankon' est le mot pour dire 'merci'."
-        },
-        {
-          type: "text",
-          prompt: "Traduis en Esperanto : 'non'",
-          answer: "ne",
-          explanation: "'Ne' signifie 'non'."
+          prompt: "Que signifie 'Mi' ?",
+          choices: ["Je", "Tu", "Nous", "Amour"],
+          answer: "Je",
+          explanation: "'Mi' veut dire 'je'."
         },
         {
           type: "mcq",
-          prompt: "Comment dit-on 'bonne nuit' ?",
-          choices: ["Bonan nokton", "Saluton", "Jes", "Mi estas"],
-          answer: "Bonan nokton",
-          explanation: "'Bonan nokton' signifie 'bonne nuit'."
+          prompt: "Que signifie 'Ni' ?",
+          choices: ["Nous", "Oui", "Elle", "Merci"],
+          answer: "Nous",
+          explanation: "'Ni' signifie 'nous'."
         },
         {
           type: "text",
-          prompt: "Traduis en français : 'Saluton'",
-          answer: "bonjour",
-          explanation: "'Saluton' peut se traduire par 'bonjour' ou 'salut'."
+          prompt: "Traduis en français : 'Amo'",
+          answer: "amour",
+          explanation: "'Amo' signifie 'amour'."
+        },
+        {
+          type: "text",
+          prompt: "Traduis en Esperanto : 'je suis'",
+          answer: "mi estas",
+          explanation: "'Mi estas' veut dire 'je suis'."
+        },
+        {
+          type: "mcq",
+          prompt: "Quel mot signifie 'heureux / contente' ?",
+          choices: ["Feliĉa", "Libro", "Akvo", "Ne"],
+          answer: "Feliĉa",
+          explanation: "'Feliĉa' signifie heureux ou contente."
         }
       ]
     };
@@ -227,7 +235,29 @@
       return lesson.exercises[state.exerciseIndex];
     }
 
-    function saveCourseResult() {
+    async function saveCourseResultToSupabase(percent, validated) {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+      if (!user) return;
+
+      const updateData = {
+        updated_at: new Date().toISOString()
+      };
+
+      updateData[lesson.id + "_percent"] = percent;
+      updateData[lesson.id + "_validated"] = validated;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(updateData)
+        .eq("id", user.id);
+
+      if (error) {
+        console.error(error);
+      }
+    }
+
+    async function saveCourseResult() {
       const percent = Math.round((state.score / lesson.exercises.length) * 100);
       const validated = percent >= 80;
 
@@ -237,6 +267,8 @@
         percent: percent,
         validated: validated
       }));
+
+      await saveCourseResultToSupabase(percent, validated);
 
       return { percent, validated };
     }
@@ -261,7 +293,7 @@
       render();
     }
 
-    function nextExercise() {
+    async function nextExercise() {
       if (state.exerciseIndex < lesson.exercises.length - 1) {
         state.exerciseIndex++;
         state.checked = false;
@@ -269,7 +301,7 @@
         state.typedAnswer = "";
       } else {
         state.finished = true;
-        saveCourseResult();
+        await saveCourseResult();
       }
       render();
     }
@@ -304,8 +336,8 @@
       `;
     }
 
-    function renderFinished(app) {
-      const result = saveCourseResult();
+    async function renderFinished(app) {
+      const result = await saveCourseResult();
 
       app.innerHTML = `
         <h2>${lesson.title} terminée 🎉</h2>
@@ -318,8 +350,8 @@
           <strong>${result.validated ? "Cours validé ✅" : "Cours non validé ❌"}</strong>
           <p>
             ${result.validated
-              ? "Bravo ! Tu as atteint au moins 80%, le cours suivant est débloqué."
-              : "Il faut au moins 80% pour valider ce cours et débloquer le suivant."}
+              ? "Bravo ! Ce cours est validé."
+              : "Il faut au moins 80% pour valider ce cours."}
           </p>
         </div>
 
@@ -328,6 +360,22 @@
           <a href="index.html"><button class="secondary">Retour à l’accueil</button></a>
         </div>
       `;
+    }
+
+    async function render() {
+      const app = document.getElementById("app");
+
+      if (!state.started) {
+        renderIntro(app);
+        return;
+      }
+
+      if (state.finished) {
+        await renderFinished(app);
+        return;
+      }
+
+      renderExercise(app);
     }
 
     function renderExercise(app) {
@@ -382,22 +430,6 @@
           <button class="secondary" onclick="resetLesson()">Retour au cours</button>
         </div>
       `;
-    }
-
-    function render() {
-      const app = document.getElementById("app");
-
-      if (!state.started) {
-        renderIntro(app);
-        return;
-      }
-
-      if (state.finished) {
-        renderFinished(app);
-        return;
-      }
-
-      renderExercise(app);
     }
 
     function selectChoice(choice) {
