@@ -273,6 +273,18 @@
         title: "Décrire le caractère",
         file: "caractere.html",
         description: "Gentil, agaçant, timide, drôle, méchant, calme, prétentieux..."
+      },
+      {
+        id: "emotions",
+        title: "Les émotions",
+        file: "emotions.html",
+        description: "Heureux, jaloux, vexé, gêné, stressé, triste..."
+      },
+      {
+        id: "vetements",
+        title: "Les vêtements et le style",
+        file: "vetements.html",
+        description: "Chic, laid, classe, étrange, trop voyant, bien habillé..."
       }
     ];
 
@@ -287,7 +299,9 @@
         (Number(progress.pronoms_percent || 0) >= 80 ? 1 : 0) +
         (Number(progress.verbes_percent || 0) >= 80 ? 1 : 0) +
         (Number(progress.apparence_percent || 0) >= 80 ? 1 : 0) +
-        (Number(progress.caractere_percent || 0) >= 80 ? 1 : 0);
+        (Number(progress.caractere_percent || 0) >= 80 ? 1 : 0) +
+        (Number(progress.emotions_percent || 0) >= 80 ? 1 : 0) +
+        (Number(progress.vetements_percent || 0) >= 80 ? 1 : 0);
       return Math.round((validated / courses.length) * 100);
     }
 
