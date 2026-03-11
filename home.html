@@ -68,13 +68,6 @@
       font-size: 14px;
       font-weight: 600;
       display: inline-block;
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-
-    .logout-btn:hover,
-    .course-btn:hover {
-      background: #4d327e;
-      transform: translateY(-1px);
     }
 
     .course-btn.locked {
@@ -256,6 +249,18 @@
         title: "Bases",
         file: "bases.html",
         description: "Mi estas, amour, mots simples."
+      },
+      {
+        id: "pronoms",
+        title: "Pronoms et personnes",
+        file: "pronoms.html",
+        description: "Je, tu, il, elle, nous, eux : parler de soi et des autres."
+      },
+      {
+        id: "verbes",
+        title: "Verbes du quotidien",
+        file: "verbes.html",
+        description: "Être, avoir, faire, aller, voir, vouloir, aimer."
       }
     ];
 
@@ -266,15 +271,18 @@
     function percentToGlobal(progress) {
       const validated =
         (Number(progress.salutations_percent || 0) >= 80 ? 1 : 0) +
-        (Number(progress.bases_percent || 0) >= 80 ? 1 : 0);
-      return Math.round((validated / 2) * 100);
+        (Number(progress.bases_percent || 0) >= 80 ? 1 : 0) +
+        (Number(progress.pronoms_percent || 0) >= 80 ? 1 : 0) +
+        (Number(progress.verbes_percent || 0) >= 80 ? 1 : 0);
+      return Math.round((validated / courses.length) * 100);
+    }
+
+    function getCoursePercent(progress, courseId) {
+      return Number(progress[courseId + "_percent"] || 0);
     }
 
     function isCourseValidatedForUser(progress, courseId) {
-      if (!progress) return false;
-      if (courseId === "salutations") return Number(progress.salutations_percent || 0) >= 80;
-      if (courseId === "bases") return Number(progress.bases_percent || 0) >= 80;
-      return false;
+      return getCoursePercent(progress, courseId) >= 80;
     }
 
     function isCourseValidatedForEveryone(courseId) {
@@ -286,14 +294,9 @@
       const list = document.getElementById("coursesList");
       list.innerHTML = "";
 
-      const salutationsDoneByEveryone = isCourseValidatedForEveryone("salutations");
-
       courses.forEach((course, index) => {
-        const unlocked = index === 0 || salutationsDoneByEveryone;
-        const myPercent =
-          course.id === "salutations"
-            ? Number(myProgress.salutations_percent || 0)
-            : Number(myProgress.bases_percent || 0);
+        const unlocked = index === 0 || isCourseValidatedForEveryone(courses[index - 1].id);
+        const myPercent = getCoursePercent(myProgress, course.id);
 
         const card = document.createElement("div");
         card.className = "course-card" + (unlocked ? "" : " locked");
@@ -310,7 +313,7 @@
         }
 
         const blockMessage = !unlocked
-          ? `<p class="muted">Le cours se débloquera quand vous aurez tous les deux validé "Salutations" à 80% minimum.</p>`
+          ? `<p class="muted">Le cours se débloquera quand vous aurez tous les deux validé "${courses[index - 1].title}" à 80% minimum.</p>`
           : "";
 
         const buttonHtml = unlocked
