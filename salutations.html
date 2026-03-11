@@ -188,6 +188,16 @@
       correct: false
     };
 
+    function playSuccessSound() {
+      try {
+        const audio = new Audio("duolingo.mp3");
+        audio.volume = 0.9;
+        audio.play().catch(() => {});
+      } catch (error) {
+        console.error("Erreur audio :", error);
+      }
+    }
+
     function normalize(str) {
       return (str || "")
         .toLowerCase()
@@ -225,9 +235,15 @@
     function verifyAnswer() {
       const ex = currentExercise();
       const userAnswer = ex.type === "mcq" ? state.selectedChoice : state.typedAnswer;
+
       state.checked = true;
       state.correct = normalize(userAnswer) === normalize(ex.answer);
-      if (state.correct) state.score++;
+
+      if (state.correct) {
+        state.score++;
+        playSuccessSound();
+      }
+
       render();
     }
 
