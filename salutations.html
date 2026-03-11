@@ -188,11 +188,15 @@
       correct: false
     };
 
+    const successAudio = new Audio("duolingo.mp3");
+    successAudio.preload = "auto";
+    successAudio.volume = 0.9;
+
     function playSuccessSound() {
       try {
-        const audio = new Audio("duolingo.mp3");
-        audio.volume = 0.9;
-        audio.play().catch(() => {});
+        successAudio.pause();
+        successAudio.currentTime = 0;
+        successAudio.play().catch(() => {});
       } catch (error) {
         console.error("Erreur audio :", error);
       }
