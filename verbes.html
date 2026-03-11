@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verbes du quotidien</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #7953B5;
+      color: #251735;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 26px;
+    }
+
+    .header,
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(40, 20, 70, 0.24);
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #4b2d78;
+    }
+
+    .subtitle,
+    .lesson-info,
+    .intro-text {
+      color: #6d5a89;
+      line-height: 1.6;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      text-decoration: none;
+      color: #4d327e;
+      font-weight: bold;
+    }
+
+    .lesson-box {
+      background: linear-gradient(135deg, #f8f3ff, #f0e8ff);
+      border: 1px solid #e2d5f7;
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    button, .button-link {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 15px;
+      background: #5c3d93;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .secondary {
+      background: #ebe3f7;
+      color: #3d2a5f;
+    }
+
+    .question {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #43296b;
+    }
+
+    .choices {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .choice {
+      border: 1px solid #d7caee;
+      background: white;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      color: #2f1c47;
+    }
+
+    .choice.selected {
+      background: #5c3d93;
+      color: white;
+      border-color: #5c3d93;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #d7caee;
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #2f1c47;
+    }
+
+    .result {
+      margin: 18px 0;
+      padding: 16px;
+      border-radius: 16px;
+    }
+
+    .good { background: #eadbff; }
+    .bad { background: #ffe4f0; }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .vocab-item {
+      background: white;
+      border: 1px solid #e1d3fa;
+      border-radius: 14px;
+      padding: 12px;
+      color: #4f3b6d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a class="back" href="home.html">← Retour à l’accueil</a>
+      <h1>Verbes du quotidien</h1>
+      <p class="subtitle">
+        Les verbes les plus utiles pour raconter ce que quelqu’un fait.
+      </p>
+    </div>
+
+    <div class="card" id="app"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const lesson = {
+      id: "verbes",
+      title: "Verbes du quotidien",
+      introText: "esti = être, havi = avoir, fari = faire, iri = aller, vidi = voir, voli = vouloir, ami = aimer.",
+      notes: [
+        "esti = être",
+        "havi = avoir",
+        "fari = faire",
+        "iri = aller",
+        "vidi = voir",
+        "voli = vouloir",
+        "ami = aimer"
+      ],
+      exercises: [
+        { type: "mcq", prompt: "Que signifie 'esti' ?", choices: ["Être", "Faire", "Voir", "Vouloir"], answer: "Être", explanation: "Esti = être." },
+        { type: "mcq", prompt: "Que signifie 'havi' ?", choices: ["Aller", "Avoir", "Aimer", "Parler"], answer: "Avoir", explanation: "Havi = avoir." },
+        { type: "mcq", prompt: "Que signifie 'fari' ?", choices: ["Faire", "Voir", "Être", "Dire"], answer: "Faire", explanation: "Fari = faire." },
+        { type: "mcq", prompt: "Que signifie 'iri' ?", choices: ["Voir", "Aller", "Avoir", "Vouloir"], answer: "Aller", explanation: "Iri = aller." },
+        { type: "mcq", prompt: "Que signifie 'vidi' ?", choices: ["Voir", "Être", "Venir", "Aimer"], answer: "Voir", explanation: "Vidi = voir." },
+        { type: "mcq", prompt: "Que signifie 'voli' ?", choices: ["Vouloir", "Aimer", "Faire", "Dire"], answer: "Vouloir", explanation: "Voli = vouloir." },
+        { type: "mcq", prompt: "Que signifie 'ami' ?", choices: ["Aimer", "Aller", "Avoir", "Voir"], answer: "Aimer", explanation: "Ami = aimer." },
+        { type: "text", prompt: "Traduis 'faire' en esperanto", answer: "fari", explanation: "Fari = faire." }
+      ]
+    };
+
+    let session = null;
+    let state = {
+      started: false,
+      exerciseIndex: 0,
+      score: 0,
+      checked: false,
+      selectedChoice: "",
+      typedAnswer: "",
+      finished: false,
+      correct: false
+    };
+
+    const successAudio = new Audio("duolingo.mp3");
+    successAudio.preload = "auto";
+    successAudio.volume = 0.9;
+
+    function playSuccessSound() {
+      try {
+        successAudio.pause();
+        successAudio.currentTime = 0;
+        successAudio.play().catch(() => {});
+      } catch (error) {
+        console.error("Erreur audio :", error);
+      }
+    }
+
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+    }
+
+    function currentExercise() {
+      return lesson.exercises[state.exerciseIndex];
+    }
+
+    async function saveCourseResult() {
+      const percent = Math.round((state.score / lesson.exercises.length) * 100);
+
+      await apiPost({
+        action: "saveCourse",
+        token: session.token,
+        course_id: lesson.id,
+        percent: String(percent)
+      });
+
+      return {
+        percent,
+        validated: percent >= 80
+      };
+    }
+
+    function startLesson() {
+      state.started = true;
+      render();
+    }
+
+    function verifyAnswer() {
+      const ex = currentExercise();
+      const userAnswer = ex.type === "mcq" ? state.selectedChoice : state.typedAnswer;
+
+      state.checked = true;
+      state.correct = normalize(userAnswer) === normalize(ex.answer);
+
+      if (state.correct) {
+        state.score++;
+        playSuccessSound();
+      }
+
+      render();
+    }
+
+    async function nextExercise() {
+      if (state.exerciseIndex < lesson.exercises.length - 1) {
+        state.exerciseIndex++;
+        state.checked = false;
+        state.selectedChoice = "";
+        state.typedAnswer = "";
+      } else {
+        state.finished = true;
+        await saveCourseResult();
+      }
+      render();
+    }
+
+    function resetLesson() {
+      state = {
+        started: false,
+        exerciseIndex: 0,
+        score: 0,
+        checked: false,
+        selectedChoice: "",
+        typedAnswer: "",
+        finished: false,
+        correct: false
+      };
+      render();
+    }
+
+    function renderIntro(app) {
+      app.innerHTML = `
+        <h2>Mini-cours</h2>
+        <p class="intro-text">${lesson.introText}</p>
+        <div class="lesson-box">
+          <div class="vocab-grid">
+            ${lesson.notes.map(n => `<div class="vocab-item">${n}</div>`).join("")}
+          </div>
+        </div>
+        <div class="buttons">
+          <button onclick="startLesson()">Commencer les exercices</button>
+        </div>
+      `;
+    }
+
+    async function renderFinished(app) {
+      const result = await saveCourseResult();
+      app.innerHTML = `
+        <h2>${lesson.title} terminée 🎉</h2>
+        <p>Score : <strong>${state.score}/${lesson.exercises.length}</strong> (${result.percent}%)</p>
+        <div class="result ${result.validated ? "good" : "bad"}">
+          <strong>${result.validated ? "Cours validé ✅" : "Cours non validé ❌"}</strong>
+          <p>${result.validated ? "Bravo." : "Il faut 80% minimum pour valider."}</p>
+        </div>
+        <div class="buttons">
+          <button onclick="resetLesson()">Revoir</button>
+          <a class="button-link secondary" href="home.html">Retour accueil</a>
+        </div>
+      `;
+    }
+
+    function renderExercise(app) {
+      const ex = currentExercise();
+
+      let answerBlock = "";
+      if (ex.type === "mcq") {
+        answerBlock = `
+          <div class="choices">
+            ${ex.choices.map(choice => `
+              <button class="choice ${state.selectedChoice === choice ? "selected" : ""}"
+                onclick="selectChoice('${choice.replace(/'/g, "\\'")}')">${choice}</button>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        answerBlock = `
+          <input
+            type="text"
+            value="${state.typedAnswer.replace(/"/g, "&quot;")}"
+            oninput="typeAnswer(this.value)"
+            ${state.checked ? "disabled" : ""}
+            placeholder="Écris ta réponse"
+          />
+        `;
+      }
+
+      let resultBlock = "";
+      if (state.checked) {
+        resultBlock = `
+          <div class="result ${state.correct ? "good" : "bad"}">
+            <strong>${state.correct ? "Bonne réponse !" : "Pas tout à fait"}</strong>
+            <p>${ex.explanation}</p>
+            ${state.correct ? "" : `<p>Réponse attendue : <strong>${ex.answer}</strong></p>`}
+          </div>
+        `;
+      }
+
+      app.innerHTML = `
+        <p class="lesson-info">Exercice ${state.exerciseIndex + 1} sur ${lesson.exercises.length}</p>
+        <div class="question">${ex.prompt}</div>
+        ${answerBlock}
+        ${resultBlock}
+        <div class="buttons">
+          ${
+            !state.checked
+              ? `<button onclick="verifyAnswer()">Vérifier</button>`
+              : `<button onclick="nextExercise()">${state.exerciseIndex < lesson.exercises.length - 1 ? "Suivant" : "Terminer"}</button>`
+          }
+          <button class="secondary" onclick="resetLesson()">Retour au cours</button>
+        </div>
+      `;
+    }
+
+    async function render() {
+      const app = document.getElementById("app");
+      if (!state.started) return renderIntro(app);
+      if (state.finished) return renderFinished(app);
+      renderExercise(app);
+    }
+
+    function selectChoice(choice) {
+      if (state.checked) return;
+      state.selectedChoice = choice;
+      render();
+    }
+
+    function typeAnswer(value) {
+      state.typedAnswer = value;
+    }
+
+    (async function init() {
+      session = await requireAuth();
+      if (!session) return;
+
+      const allRes = await apiPost({
+        action: "getAllProgress",
+        token: session.token
+      });
+
+      if (!allRes.ok) {
+        clearSession();
+        window.location.href = "index.html";
+        return;
+      }
+
+      const everyoneValidatedPronoms = allRes.users.length > 0 &&
+        allRes.users.every(user => Number(user.pronoms_percent || 0) >= 80);
+
+      if (!everyoneValidatedPronoms) {
+        window.location.href = "home.html";
+        return;
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>
